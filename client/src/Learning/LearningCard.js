@@ -90,9 +90,9 @@ class LearningCard extends Component {
                 {renderResult ? this.isCorrect() : null}
                     <h2 style={{ margin: '20px auto', color: 'black' }}>{currentGroupVal[currentIndex][choiceVal]}</h2>
                     {renderResult ? <h1 style={{ fontSize: '36px', color: 'black' }}>{currentGroupVal[currentIndex][choice]}</h1> : null}
-                    <Form onSubmit={e => this.handleAnswer(e)} onChange={this.handleChange}>
+                    <Form autoComplete="off" onSubmit={e => this.handleAnswer(e)} onChange={this.handleChange}>
                         <Form.Group>
-                            <Form.Input disabled={disableCheck} value={this.state.answer} name="answer" placeholder='Provide answer' />
+                            <Form.Input autoComplete="off" disabled={disableCheck} value={this.state.answer} name="answer" placeholder='Provide answer' />
                             <Form.Button disabled={disableCheck}>Check</Form.Button>
                         </Form.Group>
                     </Form>
