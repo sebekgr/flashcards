@@ -1,18 +1,20 @@
-import { Button,  Icon,  Modal, Checkbox, Table } from 'semantic-ui-react'
-import React, { Component } from 'react'
-import EditGroupRow from './EditGroupRow'
+import { Button,  Modal, Checkbox, Table } from 'semantic-ui-react'
+import React, { Component, Fragment } from 'react'
+import EditCategoryRow from './EditCategoryRow'
 import {AppConsumer} from '../StateContext';
 const headers = ['Status', 'Original', 'Translation']
 
-class EditGroup extends Component {
+class EditCategory extends Component {
 
   render() {
-    const {flashcards, updateFlashCardFun} = this.props
-    const header = headers.map((name, i) => <Table.HeaderCell key={i}>{name}</Table.HeaderCell>);
-    const rows = flashcards.map( (row,  i) => <EditGroupRow updateFlashCardFun={updateFlashCardFun} key={i} {...row}/>);
+    const { currentGroupVal, resetCurrentGroupFun, updateFlashCardFun} = this.props
+      const header = headers.map((name, i) => <Table.HeaderCell key={i}>{name}</Table.HeaderCell>);
+      const rows = currentGroupVal.map( (row,  i) => {
+      return <EditCategoryRow updateFlashCardFun={updateFlashCardFun} key={i} {...row}/>});
     return (
-      <Modal size="fullscreen" defaultOpen={true} onClose={this.props.onClose}>
-        <Modal.Header>Group name</Modal.Header>
+      <Fragment>
+      <Modal size="fullscreen" open={this.props.modalOpen} onClose={resetCurrentGroupFun}>
+        <Button onClick={this.props.onClose}>Close</Button>
         <Modal.Content>
           <Modal.Description>
             <Table celled compact definition>
@@ -41,6 +43,7 @@ class EditGroup extends Component {
           </Modal.Description>
         </Modal.Content>
       </Modal>
+      </Fragment>
     )
   }
 }
@@ -48,6 +51,6 @@ class EditGroup extends Component {
 
 export default props => (
   <AppConsumer>
-    {({updateFlashCardFun}) => <EditGroup {...props} updateFlashCardFun={updateFlashCardFun}/>}
+    {({currentGroupVal, updateFlashCardFun}) => <EditCategory {...props} updateFlashCardFun={updateFlashCardFun}  currentGroupVal={currentGroupVal}/>}
   </AppConsumer>
 )

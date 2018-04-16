@@ -1,43 +1,49 @@
 import React, { Component, Fragment } from 'react';
 import { Segment, Statistic, Header, Button, Label, Modal, Icon} from 'semantic-ui-react'
 import {Link } from "react-router-dom";
-import EditGroup from './EditGroup';
+import EditCategory from './EditCategory';
 import {AppConsumer} from '../StateContext';
 
 class Category extends Component {
 
-    state = {
-        renderEdit: false,
-        category: '',
-        renderLearning: false,
-        
-    }
-
-    componentDidMount() {
-        const { category } = this.props;
-        this.setState({ category })
-    }
-
-    handleRenderEdit = () => {
-        this.setState(prevState => ({ renderEdit: !prevState.renderEdit }))
+    constructor(props){
+        super(props)
+        this.state = {
+            isModalOpen: false,
+            category: props.category,
+            renderLearning: false,
+            good: props.good,
+            notBad: props.notBad,
+            bad: props.bad,
+            total: props.good + props.notBad + props.bad,
+        }
     }
 
     handleStartLearning = () => {
         this.setState(prevState => ({ renderLearning: !prevState.renderLearning }))
+        this.props.setCurrentGroupFun(this.state.category, true);
     }
 
-    handleChoice = ({target}, setCurrentGroupFun) => {
-        
-        this.props.setCurrentGroupFun(this.state.category, target.name)
+    handleChoice = ({target}) => {
+         this.props.updateChoiceFun(target.name)
+    }
+
+    handleEditGroup = () =>{
+        this.props.setCurrentGroupFun(this.props.category);
+        this.setState(prevState => ({ isModalOpen: !prevState.isModalOpen }))
+    }
+
+    handleCloseModal = () =>{
+        this.setState({isModalOpen: false})
+        this.props.resetCurrentGroupFun()
     }
 
 
     render() {
-        const { good, notBad, bad, flashcards } = this.props;
-        let total = good + notBad + bad;
+        const {total, good, notBad, bad, isModalOpen } = this.state;
         return (
             <Fragment>
-                {this.state.renderEdit ? <EditGroup onClose={this.handleRenderEdit} flashcards={flashcards} /> : null}
+                <EditCategory reset={this.props.resetCurrentGroupFun} modalOpen={isModalOpen} onClose={this.handleCloseModal} />
                 <Segment className="flashcardgroup" inverted compact>
                     <Label color="teal" attached='top left'>{this.state.category}</Label>
                     <Segment inverted>
@@ -59,7 +65,7 @@ class Category extends Component {
                         </Statistic>
                     </Segment>
                     <Segment inverted compact>
-                        <Button onClick={this.handleRenderEdit} inverted color="blue">Edit this group</Button>
+                        <Button onClick={this.handleEditGroup} inverted color="blue">Edit this group</Button>
                         <Modal
                             trigger={<Button color='green' inverted onClick={this.handleStartLearning}>Start learning</Button>}
                             open={this.state.renderLearning}
@@ -90,6 +96,6 @@ class Category extends Component {
 
 export default props => (
     <AppConsumer>
-      {({setCurrentGroupFun}) => <Category {...props} setCurrentGroupFun={setCurrentGroupFun}/>}
+      {({setCurrentGroupFun, updateChoiceFun, resetCurrentGroupFun}) => <Category {...props} updateChoiceFun={updateChoiceFun} resetCurrentGroupFun={resetCurrentGroupFun} setCurrentGroupFun={setCurrentGroupFun}/>}
     </AppConsumer>
   )

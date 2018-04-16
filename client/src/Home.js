@@ -25,7 +25,6 @@ class Home extends Component {
   render() {
     
     const {userVal} = this.props;
-    console.log(userVal)
     return (
         <div style={{padding: '20px',display: 'flex', alignItems: 'center'}}>
           {userVal ? this.loginUser(userVal.username) : this.logoutUser()}

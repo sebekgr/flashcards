@@ -1,5 +1,5 @@
 const express = require('express');
-require('dotenv').config();
+// require('dotenv').config();
 const mongoose = require('mongoose');
 const app = express();
 const keys = require('./config/keys');
@@ -30,7 +30,7 @@ require('./routes/userRoutes')(app);
 require('./routes/flashcardsRoutes')(app);
 
 
-mongoose.connect(keys.mongoDB, err => {if(err) console.log(err)})
+mongoose.connect(keys.mongoDB)
 
 if(process.env.NODE_ENV === 'production') {
     app.use(express.static('client/build'));

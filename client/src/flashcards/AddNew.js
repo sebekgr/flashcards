@@ -14,7 +14,7 @@ class AddNew extends Component {
 
     componentDidUpdate(nextProps, nextState){
         const {isAddedVal, statusAddVal} = nextProps;
-        if(nextProps.isAddedVal) {
+        if(isAddedVal) {
             this.setState({status: statusAddVal, notification: true})
             this.timeOut = setTimeout( () => this.setState({notification: false}), 1500)
         }

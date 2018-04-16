@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
-import { Button, Card, Icon, Select, Label, Form, Message } from 'semantic-ui-react'
+import { Button, Card, Icon, Label, Form, Message } from 'semantic-ui-react'
 import { AppConsumer } from '../StateContext';
-import { clearTimeout } from 'timers';
-
-
 const names = [{ key: 'good', text: 'Good', color: 'green' }, { key: 'notBad', text: 'Not bad', color: 'blue' }, { key: 'bad', text: 'Bad', color: 'red' }]
 const options = [
     { key: '1 h', text: '1 h', value: '1 h' },
@@ -18,21 +15,11 @@ class ProfileEdit extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            good: '',
-            notBad: '',
-            bad: '',
+            good: props.userVal.good,
+            notBad: props.userVal.notBad,
+            bad: props.userVal.bad,
             notification: false
         }
-    }
-
-    componentWillReceiveProps(nextProps) {
-        const { good, notBad, bad } = nextProps.userVal
-        this.setState({ good, notBad, bad })
-    }
-
-    componentWillMount() {
-        const { good, notBad, bad } = this.props.userVal;
-
     }
 
     renderRepetitions() {

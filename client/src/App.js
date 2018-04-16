@@ -3,9 +3,10 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import Home from './Home';
 import Profile from './Profile/Profile'
 import LearningCard from './Learning/LearningCard';
-
-const EditFlashcards = () => <div>EditFlashcards</div>
-
+import ProfileEdit from './Profile/ProfileEdit';
+import AddNew from './flashcards/AddNew';
+import CategoryList from './Profile/CategoryList';
+import FlashCardList from './flashcards/FlashCardList';
 
 class App extends Component {
   render() {
@@ -20,17 +21,15 @@ class App extends Component {
               <li>
                 <Link to="/profile">Profile</Link>
               </li>
-              <li>
-                <Link to="/flashcards/edit">Edit flashcards</Link>
-              </li>
-
             </ul>
 
                 <Route exact path="/" component={Home} />
-                <Route exact path="/profile" component={Profile} />
+                <Route path="/profile" component={Profile} />
+                <Route path="/profile/edit" component={ProfileEdit} />
+                <Route path="/profile/add" component={AddNew} />
+                <Route path="/profile/categorylist" component={CategoryList} />
+                <Route path="/profile/latestflashcards" component={FlashCardList} />
                 <Route exact path="/learning" component={LearningCard} />
-                <Route exact path="/flashcards/edit" component={EditFlashcards} />
-
           </div>
         </Router>
     );

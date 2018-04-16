@@ -13,7 +13,6 @@ class MyProvider extends Component {
         choice: 'original',
         statusAdd: false,
         isAdded: false,
-        currentEditedGroup: []
     }
 
     async componentDidMount() {
@@ -31,7 +30,6 @@ class MyProvider extends Component {
         const {user} = this.state
         const id = this.state.user._id;
         const {good, notBad, bad} = data;
-        console.log(data)
         const repetitions = await axios.patch(`/api/${id}/repetitions`, data);
         if(repetitions.status === 200) {
             const updateRepetitions = Object.assign({}, user, {good, notBad, bad});
@@ -44,14 +42,11 @@ class MyProvider extends Component {
         const userId = this.state.user._id;
         const payload = Object.assign({}, data, { userId });
         const flashcard = await axios.post(`/api/flashcards/add`, payload);
-        console.log(flashcard);
         if (flashcard.status === 200) {
-            const payloadCard = Object.assign({}, data, { _id: flashcard.data })
+            const payloadCard = Object.assign({}, data, { _id: flashcard.data,  repetition: 2})
             this.setState({ flashcards: [payloadCard, ...this.state.flashcards],  statusAdd: true, isAdded: true})
-            console.log('odpalam ok')
         } else {
             this.setState({statusAdd: false, isAdded: true})
-            console.log('odpalam blad')
         }
         this.setState({isAdded: false, statusAdd: false})
     }
@@ -94,11 +89,22 @@ class MyProvider extends Component {
         }
     }
 
-    handleSetCurrentGroup = (categoryName, choice) => {
-        const { currentGroup, flashcards } = this.state;
-        const learning = flashcards.filter(flashcard => flashcard.category === categoryName);
-        this.setState({ currentGroup: learning, choice });
+    handleSetCurrentGroup = (categoryName, isLearning = null) => {
+        const {flashcards} = this.state;
 
+        const currentGroup = flashcards.filter(flashcard => flashcard.category === categoryName);
+        if(isLearning) {
+            const compare = (a , b) => {
+                const aState = a.repetition
+                const bState = b.repetition
+                let comparison = 0;
+                aState > bState ? comparison = 1 : comparison = -1;
+                return comparison * -1
+            }
+            this.setState({currentGroup: currentGroup.sort(compare)})
+        } else {
+            this.setState({currentGroup})
+        }
     }
 
     handleResetCurrentGroup = () => {
@@ -111,7 +117,7 @@ class MyProvider extends Component {
 
     handleUpdateStatusFlashCard = async (id, status) => {
         const { flashcards } = this.state;
-        const res = await axios.put(`/api/flashcards/${id}/status`, { status });
+        await axios.put(`/api/flashcards/${id}/status`, { status });
         const updateFlashcards = flashcards.map(flashcard => {
             if (flashcard._id === id) {
                 return { ...flashcard, repetition: +status }
