@@ -33,7 +33,6 @@ class Category extends Component {
 
 
     render() {
-        console.log(this.props.flashcards, 'render category') ;
         const { good, notBad, bad, flashcards } = this.props;
         let total = good + notBad + bad;
         return (

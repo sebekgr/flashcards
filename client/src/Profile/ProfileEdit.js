@@ -1,46 +1,90 @@
 import React, { Component } from 'react';
-import { Button, Card,Icon,  Select } from 'semantic-ui-react'
+import { Button, Card, Icon, Select, Label, Form, Message } from 'semantic-ui-react'
+import { AppConsumer } from '../StateContext';
+import { clearTimeout } from 'timers';
 
-const repetitions = ['1 day', '1 week', '2 weeks', '1 months', '3 months', '6 months', '1 year']
-const names = [{ key: 'good', text: 'Good', color: 'green' }, { key: 'notbad', text: 'Not bad', color: 'blue' }, { key: 'bad', text: 'Bad', color: 'red' }]
+
+const names = [{ key: 'good', text: 'Good', color: 'green' }, { key: 'notBad', text: 'Not bad', color: 'blue' }, { key: 'bad', text: 'Bad', color: 'red' }]
+const options = [
+    { key: '1 h', text: '1 h', value: '1 h' },
+    { key: '1 day', text: '1 day', value: '1 day' },
+    { key: '1 week', text: '1 week', value: '1 week' },
+    { key: '1 month', text: '1 month', value: '1 month' },
+    { key: '3 month', text: '3 month', value: '3 month' },
+]
 
 class ProfileEdit extends Component {
 
+    constructor(props) {
+        super(props)
+        this.state = {
+            good: '',
+            notBad: '',
+            bad: '',
+            notification: false
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const { good, notBad, bad } = nextProps.userVal
+        this.setState({ good, notBad, bad })
+    }
+
+    componentWillMount() {
+        const { good, notBad, bad } = this.props.userVal;
+
+    }
+
     renderRepetitions() {
-
-        let options = repetitions.map((rep, i) => (
-            Object.assign({}, rep, {key: i, value: rep, text: rep})
-        ))
-        
-        return names.map(({color, text}, i)=> (
-
-
-                <div key={i} style={{display: 'grid', gridTemplateColumns: '1fr 1fr', margin: '10px 0'}}>
-                <Select action={{ color: 'teal', labelPosition: 'left', icon: 'cart', content: 'Checkout' }} value="1 day" placeholder='Select interval' options={options} />
+        return names.map(({ text, color, key }) => {
+            return (
+                <div key={key} style={{ display: 'flex' }}>
+                    <Form.Select value={this.state[key]} name={key} onChange={this.handleChange} placeholder='Select interval' options={options} />
+                    <Label color={color}>{text}</Label>
                 </div>
-        ))
+            )
+
+        })
+    }
+
+    handleChange = (e, { name, value }) => {
+        this.setState({ [name]: value })
+    }
+
+    handleSave = e => {
+        e.preventDefault();
+        this.setState({ notification: true })
+        this.timeOut = setTimeout(() => this.setState({ notification: false }), 1500)
+        const { good, notBad, bad } = this.state;
+        this.props.handleUpdateRepetitionsFun({ good, notBad, bad });
     }
 
     render() {
+        const { userVal } = this.props;
+        const { notification } = this.state;
         return (
-            <div style={{display: 'flex'}}>
-                <Card style={{margin: 'auto'}}>
+            <div style={{ display: 'flex' }}>
+
+                <Card style={{ margin: 'auto' }}>
+                    {notification ?
+                        <Card.Header>
+                             <Message positive>Your profile has been updated</Message>
+                        </Card.Header>
+                        : null}
                     <Card.Content>
                         <Button floated="right" size="mini" basic color='red'>Delete account</Button>
                         <Card.Header>
-                            Szachgr
+                            {userVal.username}
                         </Card.Header>
                     </Card.Content>
                     <Card.Content extra>
                         <Card.Description>
                             Repetitions settings <Icon name="setting" />
                         </Card.Description>
-
-                        
+                        <Form onSubmit={e => this.handleSave(e)}>
                             {this.renderRepetitions()}
-                            
-                        
-                        <Button fluid color="green">Save</Button>
+                            <Form.Button fluid color="green">Save</Form.Button>
+                        </Form>
                     </Card.Content>
                 </Card>
             </div>
@@ -48,4 +92,8 @@ class ProfileEdit extends Component {
     }
 }
 
-export default ProfileEdit;
+export default props => (
+    <AppConsumer>
+        {({ userVal, handleUpdateRepetitionsFun }) => <ProfileEdit {...props} handleUpdateRepetitionsFun={handleUpdateRepetitionsFun} userVal={userVal} />}
+    </AppConsumer>
+)

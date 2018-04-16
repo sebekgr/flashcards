@@ -14,9 +14,6 @@ class AddNew extends Component {
 
     componentDidUpdate(nextProps, nextState){
         const {isAddedVal, statusAddVal} = nextProps;
-        console.log(nextProps, ' nextProps');
-        console.log(nextState, ' nextState');
-        console.log('-------------------')
         if(nextProps.isAddedVal) {
             this.setState({status: statusAddVal, notification: true})
             this.timeOut = setTimeout( () => this.setState({notification: false}), 1500)
@@ -30,9 +27,9 @@ class AddNew extends Component {
 
      handleSubmit = e =>{
         const {addFlashCardFun} = this.props;
-        const {original, translation, categroy} = this.state;
+        const {original, translation, category} = this.state;
         e.preventDefault();
-        addFlashCardFun({original, translation, categroy});
+        addFlashCardFun({original, translation, category});
 
         this.setState({original: '', translation: ''})
     }

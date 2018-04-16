@@ -21,7 +21,7 @@ class FlashCard extends Component {
 
 
     handleEdit() {
-        this.setState({ isEdit: !this.state.isEdit });
+        this.setState(prevState=>({ isEdit: !prevState.isEdit }));
 
     }
 
@@ -33,7 +33,7 @@ class FlashCard extends Component {
         event.preventDefault();
         this.setState({ isEdit: !this.state.isEdit });
         const { translation, category, original, _id } = this.state;
-        updateFlashCardFun(_id,{ translation, category, original });
+        updateFlashCardFun({_id, translation, category, original });
     }
 
     handleCategory = (e, {value}) =>{
@@ -46,8 +46,6 @@ class FlashCard extends Component {
 
     renderIsEdit(updateFlashCardFun, categoryVal, addCategoryFun) {
         return (
-            // <AppConsumer>
-            //     {({ updateFlashCardFun, categoryVal, addCategoryFun }) => (
                     <Form onSubmit={e => this.handleSave(e, updateFlashCardFun)} onChange={e => this.handleChange(e)}>
                         <Card>
 
@@ -83,7 +81,6 @@ class FlashCard extends Component {
 
                         </Card>
                     </Form>
-                // )}</AppConsumer>
         )
     }
 

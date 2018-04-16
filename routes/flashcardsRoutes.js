@@ -31,6 +31,7 @@ module.exports = app => {
     //edit flashcard
     app.patch('/api/flashcards/:flashcard', requireLogin, async (req, res) => {
         const {original, translation, category} = req.body;
+        console.log(req.body);
         try {
             const flashcard = await Flashcard.findByIdAndUpdate({_id: req.params.flashcard}, {original, translation, category}, { "new": true});
             res.send(flashcard).status(200);

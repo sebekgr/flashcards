@@ -9,11 +9,27 @@ module.exports = app => {
         if(!req.user) {
             res.send('').status(200);
         } else {
-            const {username, _id, category} = req.user;
-            res.send({username, _id, category}); 
+            const {username, _id, category, good, notBad, bad} = req.user;
+            res.send({username, _id, category, good, notBad, bad}); 
         }
         
     });
+
+    //update repetitions settings
+
+    app.patch('/api/:user/repetitions', requireLogin, async (req, res) => {
+        const {good, notBad, bad} = req.body;
+        console.log(req.body);
+        try{
+
+            await User.findByIdAndUpdate({_id: req.params.user}, {good, notBad, bad})
+            res.send('Repetitions has been updated').status(200)
+
+        }catch (err){
+            console.log(err)
+            res.send(err).status(500)
+        }
+    })
 
     //add new category
     app.put('/api/:user/add/category', requireLogin, async (req, res) => {

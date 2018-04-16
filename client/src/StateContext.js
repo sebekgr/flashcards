@@ -9,11 +9,11 @@ class MyProvider extends Component {
         user: false,
         flashcards: [],
         category: [],
-        editGroupAllItem: false,
         currentGroup: [],
         choice: 'original',
         statusAdd: false,
-        isAdded: false
+        isAdded: false,
+        currentEditedGroup: []
     }
 
     async componentDidMount() {
@@ -23,8 +23,20 @@ class MyProvider extends Component {
         res.data.category.forEach((cat, i) =>
             category.push({ key: cat, value: cat, text: cat })
         );
-        const { _id, username } = res.data
-        this.setState({ user: { _id, username }, category, flashcards: flashcards.data });
+        const { _id, username, good, notBad, bad } = res.data
+        this.setState({ user: { _id, username, good, notBad, bad}, category, flashcards: flashcards.data });
+    }
+
+    handleUpdateRepetitions = async data => {
+        const {user} = this.state
+        const id = this.state.user._id;
+        const {good, notBad, bad} = data;
+        console.log(data)
+        const repetitions = await axios.patch(`/api/${id}/repetitions`, data);
+        if(repetitions.status === 200) {
+            const updateRepetitions = Object.assign({}, user, {good, notBad, bad});
+            this.setState({user: updateRepetitions});
+        }
     }
 
 
@@ -44,12 +56,14 @@ class MyProvider extends Component {
         this.setState({isAdded: false, statusAdd: false})
     }
 
-    handleUpdateFlashCard = async (id, data) => {
-        const flashcard = await axios.patch(`/api/flashcards/${id}`, data);
+    handleUpdateFlashCard = async data => {
+        const flashcard = await axios.patch(`/api/flashcards/${data._id}`, data);
+
         if (flashcard.status === 200) {
-            const { translation, original, category } = flashcard.data;
+
+            const { translation, original, category, _id } = flashcard.data;
             const updateFlashcards = this.state.flashcards.map(flashcard => {
-                if (flashcard._id === id) {
+                if (flashcard._id === _id) {
                     return { ...flashcard, translation, original, category }
                 } else return flashcard
             });
@@ -107,11 +121,14 @@ class MyProvider extends Component {
         this.setState({flashcards: updateFlashcards})
     }
 
+    
+
 
     render() {
         return (
             <AppContext.Provider value={{
                 stateVal: this.state,
+                currentEditedGroupVal: this.state.currentEditedGroup,
                 statusAddVal: this.state.statusAdd,
                 isAddedVal: this.state.isAdded,
                 userVal: this.state.user,
@@ -127,7 +144,9 @@ class MyProvider extends Component {
                 setCurrentGroupFun: this.handleSetCurrentGroup,
                 updateChoiceFun: this.handleUpdateChoice,
                 updateStatusFlashCardFun: this.handleUpdateStatusFlashCard,
-                resetCurrentGroupFun: this.handleResetCurrentGroup
+                resetCurrentGroupFun: this.handleResetCurrentGroup,
+                handleUpdateRepetitionsFun: this.handleUpdateRepetitions,
+                handleCurrentEditedGroupFun: this.handleCurrentEditedGroup
 
             }}>
                 {this.props.children}

@@ -3,13 +3,12 @@ import { List, Segment  } from 'semantic-ui-react'
 import Category from './Category';
 import {AppConsumer} from '../StateContext';
 class Categorylist extends Component {
+    
 
     render(){
         const {flashCardsVal, categoryVal} = this.props;
-
         let categoryGroup = categoryVal.map((cat, i) => {
         let flashcards = flashCardsVal.filter(flashcard => flashcard.category ===  cat.value)
-        console.log(flashcards)
         let good = flashcards.filter(bad => bad.repetition === 0).length;
         let notBad = flashcards.filter(bad => bad.repetition === 1).length;
         let bad = flashcards.filter(bad => bad.repetition === 2).length;
