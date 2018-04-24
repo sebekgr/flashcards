@@ -191,7 +191,7 @@ class EditCategory extends Component {
             />
           </div>
           </Modal.Header>
-            <Table size="small" scroll={{ y: '45vh' }} columns={this.columns} dataSource={searchText === '' ? data : filteredData} pagination={{ pageSize: 10 }} />
+            <Table size="large" scroll={{ y: '45vh' }} columns={this.columns} dataSource={searchText === '' ? data : filteredData} pagination={{ pageSize: 10 }} />
         </Modal>
       </Fragment>
     )
