@@ -26,10 +26,12 @@ class AddNew extends Component {
     }
 
      handleSubmit = e =>{
-        const {addFlashCardFun} = this.props;
+        const {addFlashCardFun, userVal} = this.props;
         const {original, translation, category} = this.state;
         e.preventDefault();
-        addFlashCardFun({original, translation, category});
+        const localDate = new Date().toLocaleString();
+        const dateToMs = new Date(localDate).getTime();
+        addFlashCardFun({original, translation, category, _user: userVal._id, createAt: dateToMs});
 
         this.setState({original: '', translation: ''})
     }

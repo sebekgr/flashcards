@@ -4,11 +4,11 @@ export const AppContext = React.createContext();
 export const AppConsumer = AppContext.Consumer;
 
 const options = [
-    { key: '3600', text: '1 h', value: '1 h' },
-    { key: '86400', text: '1 day', value: '1 day' },
-    { key: '604800', text: '1 week', value: '1 week' },
-    { key: '2628000', text: '1 month', value: '1 month' },
-    { key: '7884000', text: '3 months', value: '3 months' },
+    { key: '360000', text: '1 h', value: '1 h' },
+    { key: '8640000', text: '1 day', value: '1 day' },
+    { key: '60480000', text: '1 week', value: '1 week' },
+    { key: '262800000', text: '1 month', value: '1 month' },
+    { key: '788400000', text: '3 months', value: '3 months' },
 ]
 
 class MyProvider extends Component {
@@ -39,7 +39,6 @@ class MyProvider extends Component {
         const {user} = this.state
         const id = this.state.user._id;
         const {good, notBad, bad, countGood, countNotBad, countBad } = data;
-        console.log(data);
         const repetitions = await axios.patch(`/api/${id}/repetitions`, data);
         if(repetitions.status === 200) {
             const updateRepetitions = Object.assign({}, user, {good, notBad, bad});
@@ -49,12 +48,9 @@ class MyProvider extends Component {
 
 
     handleAddFlashCard = async data => {
-        const userId = this.state.user._id;
-        const payload = Object.assign({}, data, { userId });
-        const flashcard = await axios.post(`/api/flashcards/add`, payload);
+        const flashcard = await axios.post(`/api/flashcards/add`, data);
         if (flashcard.status === 200) {
-            const payloadCard = Object.assign({}, data, { _id: flashcard.data,  repetition: 2})
-            this.setState({ flashcards: [payloadCard, ...this.state.flashcards],  statusAdd: true, isAdded: true})
+            this.setState({ flashcards: [flashcard.data, ...this.state.flashcards],  statusAdd: true, isAdded: true})
         } else {
             this.setState({statusAdd: false, isAdded: true})
         }
@@ -62,25 +58,29 @@ class MyProvider extends Component {
     }
 
     handleUpdateFlashCard = async data => {
+        console.log(data)
         const flashcard = await axios.patch(`/api/flashcards/${data._id}`, data);
-
         if (flashcard.status === 200) {
-
             const { translation, original, category, _id } = flashcard.data;
             const updateFlashcards = this.state.flashcards.map(flashcard => {
                 if (flashcard._id === _id) {
                     return { ...flashcard, translation, original, category }
                 } else return flashcard
             });
-            this.setState({ flashcards: updateFlashcards });
+            const currentGroup = updateFlashcards.filter(flash => flash.category === this.state.currentGroup[0].category);
+            this.setState({ flashcards: updateFlashcards, currentGroup });
         }
     }
 
-    handleRemoveFlasCard = async id => {
+    handleRemoveFlashCard = async id => {
         const flashcard = await axios.delete(`/api/flashcards/${id}`);
         if (flashcard.status === 200) {
-            let othersFlashCards = this.state.flashcards.filter(flashcard => flashcard._id !== id);
-            this.setState({ flashcards: othersFlashCards });
+            const othersFlashCards = this.state.flashcards.filter(flashcard => flashcard._id !== id);
+            if(this.state.currentGroup.length !== 0) {
+                const currentGroup = this.state.currentGroup.filter(flashcard => flashcard._id !== id);
+                this.setState({ flashcards: othersFlashCards, currentGroup });
+            }
+            this.setState({ flashcards: othersFlashCards});
         }
     }
 
@@ -109,17 +109,18 @@ class MyProvider extends Component {
             const countGood = +options.find(op => op.text === good).key
             const countNotBad = +options.find(op => op.text === notBad).key
             const countBad = +options.find(op => op.text === bad).key
-
-           const aff = currentGroup.filter(current => {
-                let d =  Date.now()
+            let d = new Date().toLocaleString();
+            let l = new Date(d).getTime();
+            +l;            
+            const isReady = currentGroup.filter(current => {
                 if(current.repetition === 0) {
-                    current.modifyAt + countGood <= d
+                   return current.modifyAt + countGood <= l
                 }
                 if(current.repetition === 1) {
-                    current.modifyAt + countNotBad <= d
+                   return current.modifyAt + countNotBad <= l
                 } 
                 if(current.repetition === 2) {
-                    current.modifyAt + countBad <= d
+                     return  current.modifyAt + countBad <= l
                 }
             })
             const compare = (a , b) => {
@@ -129,7 +130,7 @@ class MyProvider extends Component {
                 aState > bState ? comparison = 1 : comparison = -1;
                 return comparison * -1
             }
-            this.setState({currentGroup: aff.sort(compare)})
+            this.setState({currentGroup: isReady.sort(compare)})
         } else {
             //handle for edit groupe
             this.setState({currentGroup})
@@ -146,7 +147,10 @@ class MyProvider extends Component {
 
     handleUpdateStatusFlashCard = async (id, status) => {
         const { flashcards } = this.state;
-        const res = await axios.put(`/api/flashcards/${id}/status`, {status});
+        let d = new Date().toLocaleString();
+        let l = new Date(d).getTime();
+        +l;
+        const res = await axios.put(`/api/flashcards/${id}/status`, {status, modifyAt: l});
         const updateFlashcards = flashcards.map(flashcard => {
             if (flashcard._id === id) {
                 return res.data
@@ -175,7 +179,7 @@ class MyProvider extends Component {
                 addFlashCardFun: this.handleAddFlashCard,
                 addCategoryFun: this.handleAddCategory,
                 updateFlashCardFun: this.handleUpdateFlashCard,
-                removeFlasCardFun: this.handleRemoveFlasCard,
+                removeFlashCardFun: this.handleRemoveFlashCard,
                 setCurrentGroupFun: this.handleSetCurrentGroup,
                 updateChoiceFun: this.handleUpdateChoice,
                 updateStatusFlashCardFun: this.handleUpdateStatusFlashCard,

@@ -1,30 +1,22 @@
 body,html{
     height:100%;
     min-height: 100%;
-    background: #F0F2F5;
+    background: #444242!important;
 }
-
-.test{
-    display: flex!important;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    align-content: center;
-}
-.flashcardgroup{
-    margin:10px!important;
-}
-
 .ico-click{
     cursor: pointer;
 }
 
-.fade-enter {
-    opacity: 0;
-    z-index: 1;
-  }
-  
-  .fade-enter.fade-enter-active {
-    opacity: 1;
-    transition: opacity 250ms ease-in;
-  }
+/*main-wrapper*/
+.main-wrapper{
+    border: 1px solid red;
+    text-align: center;
+    margin: auto;
+    padding: auto;
+    width: 100%;
+    min-height: 100vh;
+}
+.welcome-heading{
+    font-size: 5vw;
+    text-transform: uppercase;
+}

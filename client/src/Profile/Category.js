@@ -44,7 +44,6 @@ class Category extends Component {
         return (
             <Fragment>
                 <EditCategory reset={this.props.resetCurrentGroupFun} modalOpen={isModalOpen} onClose={this.handleCloseModal} />
-                <Segment className="flashcardgroup" inverted compact>
                     <Label color="teal" attached='top left'>{this.state.category}</Label>
                     <Segment inverted>
                         <Statistic inverted size="small">
@@ -88,7 +87,6 @@ class Category extends Component {
                          </Modal>
 
                     </Segment>
-                </Segment>
             </Fragment>
         )
     }

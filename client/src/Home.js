@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import {AppConsumer} from './StateContext';
-
+import { Icon} from 'antd';
 class Home extends Component {
 
   loginUser(name){
     return (
-      <div style={{marginRight: '20px'}}>
+      <div>
         <p>You are login</p>
-        <p>Welcome {name}</p>
+        <p>Welcome <a href="/profile">{name}</a></p>
         <a href="/auth/logout">Log out</a>
       </div>
     )
@@ -16,7 +16,8 @@ class Home extends Component {
     return (
       <div>
         <p>You are not login</p>
-        <a href="/auth/google">Log in</a>
+        
+        <a href="/auth/google">Log in with <Icon type="google-plus" /></a>
       </div>
     )
   }
@@ -26,7 +27,7 @@ class Home extends Component {
     
     const {userVal} = this.props;
     return (
-        <div style={{padding: '20px',display: 'flex', alignItems: 'center'}}>
+        <div>
           {userVal ? this.loginUser(userVal.username) : this.logoutUser()}
         </div>
     );

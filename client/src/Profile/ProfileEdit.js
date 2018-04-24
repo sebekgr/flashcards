@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import { Button, Card, Icon, Label, Form, Message, Dropdown } from 'semantic-ui-react'
+import { Button, Card, Icon, Label, Form, Message } from 'semantic-ui-react'
 import { AppConsumer } from '../StateContext';
+import { Select } from 'antd';
+const Option = Select.Option;
 const names = [{ key: 'good', text: 'Good', color: 'green' }, { key: 'notBad', text: 'Not bad', color: 'blue' }, { key: 'bad', text: 'Bad', color: 'red' }]
 const options = [
     { key: '3600', text: '1 h', value: '1 h' },
@@ -29,21 +31,30 @@ class ProfileEdit extends Component {
         }
     }
 
+    componentDidMount(){
+        const {good, notBad, bad} = this.props.userVal;
+        if(good) {
+            this.setState({good, notBad, bad})
+        }
+    }
+
     renderRepetitions() {
-        return names.map(({ text, color, key }) => {
-            return (
-                <div key={key} style={{ display: 'flex' }}>
-                    <Dropdown value={this.state[key]} name={key} onChange={this.handleChange} options={options} />
+        let elem = names.map(({text, key, color}) => {
+            return(
+                <div key={key} style={{display: 'grid', gridTemplateColumns: '1fr 50px', gridGap: '10px'}}>
+                    <Select value={this.state[key]} onChange={(e) => this.handleChange(e, key)}>
+                        {options.map(({value}) => <Option key={value} value={value}>{value}</Option>)}
+                    </Select>
                     <Label color={color}>{text}</Label>
                 </div>
             )
-
         })
+
+        return elem;
     }
 
-    handleChange = (e,  {name, value}) => {
-        //console.log(lol)
-        this.setState({ [name]: value })
+    handleChange = (e, key) => {
+        this.setState({ [key]: e })
     }
 
     handleSave = e => {
@@ -51,7 +62,6 @@ class ProfileEdit extends Component {
         this.setState({ notification: true })
         this.timeOut = setTimeout(() => this.setState({ notification: false }), 1500)
         const { good, notBad, bad } = this.state;
-        //console.log(this.state);
         this.props.handleUpdateRepetitionsFun({ good, notBad, bad});
     }
 
@@ -78,7 +88,7 @@ class ProfileEdit extends Component {
                             Repetitions settings <Icon name="setting" />
                         </Card.Description>
                         <Form onSubmit={e => this.handleSave(e)}>
-                            {this.renderRepetitions()}
+                            {this.renderRepetitions(userVal)}
                             <Form.Button fluid color="green">Save</Form.Button>
                         </Form>
                     </Card.Content>

@@ -12,14 +12,11 @@ class App extends Component {
   render() {
     return (
         <Router>
-          <div>
-          <h1>Flash cards</h1>
+          <div className="main-wrapper">
+          <h1 className="welcome-heading">Flash cards</h1>
             <ul style={{display: 'flex', width: '30vw', listStyle: 'none', justifyContent:'space-around'}}>
               <li>
                 <Link to="/">Home</Link>
-              </li>
-              <li>
-                <Link to="/profile">Profile</Link>
               </li>
             </ul>
 

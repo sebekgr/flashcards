@@ -16,23 +16,22 @@ module.exports = app => {
     //add flashcard
 
     app.post('/api/flashcards/add', requireLogin, async (req, res) => {
-        const {original, translation, category, userId} = req.body;
-    
+        const {original, translation, category, _user, createAt} = req.body;
         const flashcard = await new Flashcard({
             original,
             translation,
             category,
-            _user: userId
+            createAt,
+            _user
         }).save();
-        res.send(flashcard._id).status(200);
-       
+        res.send(flashcard).status(200);
+      
     })
 
     //edit flashcard
     app.patch('/api/flashcards/:flashcard', requireLogin, async (req, res) => {
         const {original, translation, category} = req.body;
-        console.log(req.body);
-        try {
+         try {
             const flashcard = await Flashcard.findByIdAndUpdate({_id: req.params.flashcard}, {original, translation, category}, { "new": true});
             res.send(flashcard).status(200);
         } catch(err){
@@ -43,9 +42,9 @@ module.exports = app => {
 
     //update status of flashcard
     app.put('/api/flashcards/:flashcard/status', requireLogin, async (req, res) => {
-        const {status} = req.body
+        const {status, modifyAt} = req.body
         try {
-            const flashcard = await Flashcard.findByIdAndUpdate({_id: req.params.flashcard}, {repetition: status, modifyAt: Date.now()}, {"new" : true});
+            const flashcard = await Flashcard.findByIdAndUpdate({_id: req.params.flashcard}, {repetition: status, modifyAt}, {"new" : true});
             res.send(flashcard).status(200);
         }catch(err) {
             res.send(err).status(500)
