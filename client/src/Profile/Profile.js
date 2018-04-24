@@ -15,14 +15,12 @@ const Stats = () => <div> some stats</div>
 
 const Profile = ({ location, match }) => {
   return (
-    <div>
-      <Segment inverted>
-        <Menu inverted secondary>
+    <div className="menu-wrapper">
+        <Menu inverted>
           {
             routeList.map(({ key, name }) => <Menu.Item active={location.pathname === `${match.path}${key}`} key={name} name={name}> <Link to={`${match.path}${key}`}> {name}</Link> </Menu.Item>)
           }
         </Menu>
-      </Segment>
       {location.pathname === '/profile' ? <Stats /> : null}
     </div>
   )

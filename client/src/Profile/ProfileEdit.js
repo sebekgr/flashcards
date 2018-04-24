@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-import { Button, Card, Icon, Label, Form, Message } from 'semantic-ui-react'
+import { Button, Card, Icon, Label, Form, Message, Select } from 'semantic-ui-react'
 import { AppConsumer } from '../StateContext';
-import { Select } from 'antd';
-const Option = Select.Option;
 const names = [{ key: 'good', text: 'Good', color: 'green' }, { key: 'notBad', text: 'Not bad', color: 'blue' }, { key: 'bad', text: 'Bad', color: 'red' }]
 const options = [
     { key: '3600', text: '1 h', value: '1 h' },
@@ -41,10 +39,8 @@ class ProfileEdit extends Component {
     renderRepetitions() {
         let elem = names.map(({text, key, color}) => {
             return(
-                <div key={key} style={{display: 'grid', gridTemplateColumns: '1fr 50px', gridGap: '10px'}}>
-                    <Select value={this.state[key]} onChange={(e) => this.handleChange(e, key)}>
-                        {options.map(({value}) => <Option key={value} value={value}>{value}</Option>)}
-                    </Select>
+                <div key={key}>
+                    <Select className="profile-select-options" value={this.state[key]} onChange={(e) => this.handleChange(e, key)} options={options} />
                     <Label color={color}>{text}</Label>
                 </div>
             )
@@ -69,30 +65,21 @@ class ProfileEdit extends Component {
         const { userVal } = this.props;
         const { notification } = this.state;
         return (
-            <div style={{ display: 'flex' }}>
-
-                <Card style={{ margin: 'auto' }}>
-                    {notification ?
-                        <Card.Header>
+            <div className="profile-wrapper">
+                <div className="profile-card">
+                {notification ?
                              <Message positive>Your profile has been updated</Message>
-                        </Card.Header>
                         : null}
-                    <Card.Content>
-                        <Button floated="right" size="mini" basic color='red'>Delete account</Button>
-                        <Card.Header>
+                        <div className="profile-heading">
                             {userVal.username}
-                        </Card.Header>
-                    </Card.Content>
-                    <Card.Content extra>
-                        <Card.Description>
-                            Repetitions settings <Icon name="setting" />
-                        </Card.Description>
-                        <Form onSubmit={e => this.handleSave(e)}>
+                            <Button floated="right" size="mini" basic color='red'>Delete account</Button>
+                        </div>
+                        <p>Repetitions settings <Icon name="setting" /></p>
+                        <Form className="profile-form" onSubmit={e => this.handleSave(e)}>
                             {this.renderRepetitions(userVal)}
                             <Form.Button fluid color="green">Save</Form.Button>
                         </Form>
-                    </Card.Content>
-                </Card>
+                </div>
             </div>
         )
     }

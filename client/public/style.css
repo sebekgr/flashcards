@@ -2,9 +2,17 @@ body,html{
     height:100%;
     min-height: 100%;
     background: #444242!important;
+    color: #fff!important;
 }
 .ico-click{
     cursor: pointer;
+}
+a{
+    color: #f49b42!important;
+    text-decoration: none!important;
+}
+a:hover{
+    color: #f9ae63!important;
 }
 
 /*main-wrapper*/
@@ -19,4 +27,31 @@ body,html{
 .welcome-heading{
     font-size: 5vw;
     text-transform: uppercase;
+    color: #fff;
 }
+
+/*menu*/
+.menu-wrapper{
+    margin: 30px auto;
+}
+
+.profile-wrapper{
+    
+}
+.profile-card{
+    background: #1B1C1D;
+}
+
+/* .profile-select-options{
+    border:1px solid #f49b42!important;
+    background: transparent!important;
+    color: #fff!important;
+    
+}
+.ui.selection.dropdown {
+    color: #fff!important;
+}
+.ui.dropdown .menu .selected.item, .ui.dropdown.selected {
+    background: #444242!important;
+    color: #fff!important;
+} */

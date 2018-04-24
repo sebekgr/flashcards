@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 import Home from './Home';
 import Profile from './Profile/Profile'
 import LearningCard from './Learning/LearningCard';
@@ -14,12 +14,6 @@ class App extends Component {
         <Router>
           <div className="main-wrapper">
           <h1 className="welcome-heading">Flash cards</h1>
-            <ul style={{display: 'flex', width: '30vw', listStyle: 'none', justifyContent:'space-around'}}>
-              <li>
-                <Link to="/">Home</Link>
-              </li>
-            </ul>
-
                 <Route exact path="/" component={Home} />
                 <Route path="/profile" component={Profile} />
                 <Route path="/profile/edit" component={ProfileEdit} />
