@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, Segment } from 'semantic-ui-react'
+import { Menu, Icon } from 'antd';
 import { Link } from "react-router-dom";
 
 
@@ -16,13 +16,21 @@ const Stats = () => <div> some stats</div>
 const Profile = ({ location, match }) => {
   return (
     <div className="menu-wrapper">
-        <Menu inverted>
-          {
-            routeList.map(({ key, name }) => <Menu.Item active={location.pathname === `${match.path}${key}`} key={name} name={name}> <Link to={`${match.path}${key}`}> {name}</Link> </Menu.Item>)
-          }
-        </Menu>
+      <Menu mode="horizontal">
+      <Menu.Item><Link to='/'>Home</Link></Menu.Item>
+        {
+          routeList.map(({ key, name }) => <Menu.Item active={location.pathname === `${match.path}${key}`} key={name} name={name}> <Link to={`${match.path}${key}`}> {name}</Link> </Menu.Item>)
+        }
+      </Menu>
+
       {location.pathname === '/profile' ? <Stats /> : null}
     </div>
   )
 }
 export default Profile;
+
+        /* <Menu>
+          {
+            routeList.map(({ key, name }) => <Menu.Item active={location.pathname === `${match.path}${key}`} key={name} name={name}> <Link to={`${match.path}${key}`}> {name}</Link> </Menu.Item>)
+          }
+        </Menu> */

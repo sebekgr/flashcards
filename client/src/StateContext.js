@@ -20,7 +20,6 @@ class MyProvider extends Component {
         currentGroup: [],
         choice: 'original',
         statusAdd: false,
-        isAdded: false,
     }
 
     async componentDidMount() {
@@ -38,37 +37,50 @@ class MyProvider extends Component {
     handleUpdateRepetitions = async data => {
         const {user} = this.state
         const id = this.state.user._id;
-        const {good, notBad, bad, countGood, countNotBad, countBad } = data;
+        const {good, notBad, bad} = data;
         const repetitions = await axios.patch(`/api/${id}/repetitions`, data);
         if(repetitions.status === 200) {
-            const updateRepetitions = Object.assign({}, user, {good, notBad, bad});
-            this.setState({user: updateRepetitions, countGood, countNotBad, countBad });
+            
+            this.setState({good, notBad, bad, statusAdd: true});
+            this.helperChangeStatus();
         }
     }
 
+    helperChangeStatus(){
+       this.timeOut = setTimeout(() => this.setState({statusAdd: false }), 1500);
+    }
 
     handleAddFlashCard = async data => {
+        const isCategory = this.state.category.find(category => category.value === data.category);
+        if(!isCategory) await this.handleAddCategory(data.category);
         const flashcard = await axios.post(`/api/flashcards/add`, data);
         if (flashcard.status === 200) {
-            this.setState({ flashcards: [flashcard.data, ...this.state.flashcards],  statusAdd: true, isAdded: true})
-        } else {
-            this.setState({statusAdd: false, isAdded: true})
-        }
-        this.setState({isAdded: false, statusAdd: false})
+            
+            this.setState({ flashcards: [flashcard.data, ...this.state.flashcards], statusAdd: true})
+            this.helperChangeStatus();
+        } 
     }
 
     handleUpdateFlashCard = async data => {
-        console.log(data)
+        console.log(data);
         const flashcard = await axios.patch(`/api/flashcards/${data._id}`, data);
         if (flashcard.status === 200) {
+            
             const { translation, original, category, _id } = flashcard.data;
             const updateFlashcards = this.state.flashcards.map(flashcard => {
                 if (flashcard._id === _id) {
                     return { ...flashcard, translation, original, category }
                 } else return flashcard
             });
-            const currentGroup = updateFlashcards.filter(flash => flash.category === this.state.currentGroup[0].category);
-            this.setState({ flashcards: updateFlashcards, currentGroup });
+            
+            if(this.state.currentGroup.length !== 0) {
+                const currentGroup = updateFlashcards.filter(flash => flash.category === this.state.currentGroup[0].category);
+                this.setState({ flashcards: updateFlashcards, currentGroup, statusAdd: true});
+            } else {
+                this.setState({ flashcards: updateFlashcards, statusAdd: true});
+            }
+            this.helperChangeStatus();
+            
         }
     }
 
@@ -84,12 +96,12 @@ class MyProvider extends Component {
         }
     }
 
-    handleAddCategory = async (event, { value }) => {
+    handleAddCategory = async value => {
         const id = this.state.user._id;
         try {
             const reqCategory = await axios.put(`/api/${id}/add/category`, { newCategory: value.trim() });
             if (reqCategory.status === 200) {
-                const newCategory = { key: value, text: value, value, icon: 'delete' };
+                const newCategory = { key: value, text: value, value };
                 this.setState(prev => ({
                     category: [newCategory, ...prev.category]
                 }))
@@ -156,10 +168,13 @@ class MyProvider extends Component {
                 return res.data
             } else return flashcard
         })
-
-        this.setState({flashcards: updateFlashcards})
+        
+        this.setState({flashcards: updateFlashcards});
+        
     }
 
+
+    
     
 
 
@@ -167,9 +182,8 @@ class MyProvider extends Component {
         return (
             <AppContext.Provider value={{
                 stateVal: this.state,
-                currentEditedGroupVal: this.state.currentEditedGroup,
                 statusAddVal: this.state.statusAdd,
-                isAddedVal: this.state.isAdded,
+                currentEditedGroupVal: this.state.currentEditedGroup,
                 userVal: this.state.user,
                 choiceVal: this.state.choice,
                 currentGroupVal: this.state.currentGroup,

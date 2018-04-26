@@ -1,94 +1,145 @@
 import React, {Component} from 'react';
-import { Button, Form, Dropdown, Message } from 'semantic-ui-react'
+import { Form, Input, Button, Select, message, Alert   } from 'antd';
 import {AppConsumer} from '../StateContext';
+import ExistFlashcard from './ExistFlashcard';
+const FormItem = Form.Item;
+const Option = Select.Option;
+
+
 
 class AddNew extends Component {
+
+    componentWillReceiveProps(nextProps){
+    if(nextProps.statusAddVal === true && this.state.original !== '') {
+        message.success('Flashcard has been added', 1);
+       this.props.form.resetFields();
+       this.setState({original: '', translation: '', show: false});
+    }
+    }
 
     state = {
         original: '',
         translation: '',
         category: '',
-        status: false,
-        notification: false       
+        show: false,
+        isExist: null
+   }
+
+    handleFormChange = (e) => {
+        e.target ? this.setState({[e.target.id]: e.target.value}) : this.setState({category: e})
     }
 
-    componentDidUpdate(nextProps, nextState){
-        const {isAddedVal, statusAddVal} = nextProps;
-        if(isAddedVal) {
-            this.setState({status: statusAddVal, notification: true})
-            this.timeOut = setTimeout( () => this.setState({notification: false}), 1500)
-        }
-        
-    } 
-
-    handleChange = event =>{
-         this.setState({[event.target.name]: event.target.value})
-    }
-
-     handleSubmit = e =>{
-        const {addFlashCardFun, userVal} = this.props;
-        const {original, translation, category} = this.state;
+    handleSubmit = (e) => {
         e.preventDefault();
-        const localDate = new Date().toLocaleString();
-        const dateToMs = new Date(localDate).getTime();
-        addFlashCardFun({original, translation, category, _user: userVal._id, createAt: dateToMs});
+        this.props.form.validateFields((err, values) => {
+          if (!err) {
+            const {addFlashCardFun, userVal, flashCardsVal, updateFlashCardFun} = this.props;
+            const {original, translation, category} = this.state;
+            const isExistTranslation = flashCardsVal.find(flashcard => flashcard.translation === translation);
+            if(isExistTranslation) {
+               this.setState({isExist: isExistTranslation, show: true })
+            } else {
+                const localDate = new Date().toLocaleString();
+                const dateToMs = new Date(localDate).getTime();
+                addFlashCardFun({original, translation, category, _user: userVal._id, createAt: dateToMs});
+            }
+            
+          }
+        });
+      }
 
-        this.setState({original: '', translation: ''})
-    }
+      handleUpdate = (e) => {
+        e.preventDefault();
+        this.props.updateFlashCardFun(this.state.isExist);
 
-    handleCategory = (e, {value}) =>{
-        this.setState({category: value})
-    }
+      }
 
-    renderStatus(){
-        const {status} = this.state;
-        return status ? <Message color='green'>Successfully added</Message> : <Message color='red'>Somethink went wrong, please try again :)</Message>
-    }
+      handleChangeUpdating = (e) => {
+          const isExist = Object.assign({}, this.state.isExist, {[e.target.id]: e.target.value});
+        this.setState({isExist})  
 
-    componentWillUnmount(){
-        clearTimeout(this.timeOut);
-    }
+      }
+
+      handleCancel = () => {
+          this.setState({show: false});
+      }
+
 
     render(){
-        const {notification, original, translation, category} = this.state;
-        const {addCategoryFun, categoryVal} = this.props;
+        const {categoryVal} = this.props;
+        const {category, original, translation, show, isExist} = this.state;
+        const { getFieldDecorator } = this.props.form;
         return(
-                <Form onSubmit={e => this.handleSubmit(e)} onChange={this.handleChange}>
-                {notification ? this.renderStatus() : null}
-                <Form.Input required  label="Original" type="text" name="original" value={original}/>
-                <Form.Input required  label="Translation" type="text" name="translation" value={translation}/>
-                    <Dropdown
-                        options={categoryVal}
-                        placeholder='Choose Category'
-                        search
-                        selection
-                        fluid
-                        allowAdditions
-                        value={category}
-                        onAddItem={addCategoryFun}
-                        onChange={this.handleCategory}
-                    />
-                    <Button type='submit' color="green">Add</Button>
-                </Form> 
+            <div className="add-flashcard-wrapper">
+               {show ?
+                <Alert
+                    message="Duplicate detection"
+                    description={<ExistFlashcard change={this.handleChangeUpdating} update={this.handleUpdate} {...this.state} cancel={this.handleCancel} categoryList={categoryVal}/>}
+                    type="warning"
+                    showIcon
+                    /> : null} 
+                <Form onChange={this.handleFormChange} onSubmit={this.handleSubmit}  style={{ width: '100%'}}  className="login-form">
+                    <FormItem label="Original">
+                        {getFieldDecorator('original', {initialValue: original,
+                            rules: [{ required: true, message: 'Please fill in this field!'}],
+                            valuePropName: 'value'
+                        })(
+                            <Input />
+                        )}
+                    </FormItem>
+                    <FormItem label="Translation">
+
+                        {   getFieldDecorator('translation', { initialValue: translation,
+                            rules: [{ required: true, message: 'Please fill in this field!'}],
+                            valuePropName: 'value'
+                        })(
+                            <Input  />
+                        )}
+                    </FormItem>
+                    <FormItem label="Category" extra="If you want add new category just start typing">
+                    {getFieldDecorator('category', { initialValue: category,
+                            rules: [{ required: true, message: 'Please fill in this field!'}],
+                        })(
+                            <Select onSelect={this.handleFormChange} mode="combobox" >
+                            {
+                                categoryVal.map(({value}) => <Option key={value} value={value}>{value}</Option>)
+                            }
+                            </Select>
+                        )}
+                        
+                    </FormItem>
+                    <FormItem>
+                    <Button type="primary" htmlType="submit" className="login-form-button">
+                       Add
+                    </Button>
+                    </FormItem>
+                </Form>
+             
+            </div>
           
         )
     }
 }
 
+
+
+
+
+AddNew = Form.create()(AddNew);
+
 export default props => (
     <AppConsumer>
-      {({addFlashCardFun,statusAddVal,isAddedVal, userVal, state, addCategoryFun, categoryVal}) =>(
+      {({addFlashCardFun,statusAddVal, updateFlashCardFun,userVal, state, addCategoryFun, categoryVal, flashCardsVal}) =>(
           <AddNew {...props}
-            statusAddVal={statusAddVal}
             addFlashCardFun={addFlashCardFun} 
             userVal={userVal}
             state={state}
-            isAddedVal={isAddedVal}
             addCategoryFun={addCategoryFun}
             categoryVal={categoryVal}
+            statusAddVal={statusAddVal}
+            flashCardsVal={flashCardsVal}
+            updateFlashCardFun={updateFlashCardFun}
         />
       ) }
     </AppConsumer>
   )
-  
-

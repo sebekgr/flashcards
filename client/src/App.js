@@ -13,7 +13,6 @@ class App extends Component {
     return (
         <Router>
           <div className="main-wrapper">
-          <h1 className="welcome-heading">Flash cards</h1>
                 <Route exact path="/" component={Home} />
                 <Route path="/profile" component={Profile} />
                 <Route path="/profile/edit" component={ProfileEdit} />

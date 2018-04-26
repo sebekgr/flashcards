@@ -180,8 +180,8 @@ class EditCategory extends Component {
     const {data, filteredData, searchText} = this.state;
     return (
       <Fragment>
-        <Modal size="fullscreen" open={modalOpen} onClose={resetCurrentGroupFun}>
-         <Modal.Header>
+        <Modal style={{background: '#444242'}} size="fullscreen" open={modalOpen} onClose={resetCurrentGroupFun}>
+         <Modal.Header style={{background: '#444242'}}>
          <div className="custom-filter-dropdown">
           <Button onClick={this.props.onClose}>Close</Button>
             <Input

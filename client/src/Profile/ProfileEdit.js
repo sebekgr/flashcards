@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import { Button, Card, Icon, Label, Form, Message, Select } from 'semantic-ui-react'
 import { AppConsumer } from '../StateContext';
+import { Select,  Form, Input, Button, message } from 'antd';
+const Option = Select.Option;
+const FormItem = Form.Item;
 const names = [{ key: 'good', text: 'Good', color: 'green' }, { key: 'notBad', text: 'Not bad', color: 'blue' }, { key: 'bad', text: 'Bad', color: 'red' }]
 const options = [
     { key: '3600', text: '1 h', value: '1 h' },
@@ -10,83 +12,76 @@ const options = [
     { key: '7884000', text: '3 months', value: '3 months' },
 ]
 
+
 class ProfileEdit extends Component {
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            good: null,
-            notBad: null,
-            bad: null,
-            notification: false
-        }
+    componentWillReceiveProps({statusAddVal}){
+        if(statusAddVal) message.success('Profile has been updated', 1);
     }
 
-    componentWillReceiveProps({userVal}){
-        const {good, notBad, bad} = userVal;
-        if(userVal) {
-            this.setState({good, notBad, bad})
-        }
-    }
-
-    componentDidMount(){
-        const {good, notBad, bad} = this.props.userVal;
-        if(good) {
-            this.setState({good, notBad, bad})
-        }
-    }
-
-    renderRepetitions() {
+    renderRepetitions(formItemLayout, getFieldDecorator, userVal) {
         let elem = names.map(({text, key, color}) => {
             return(
-                <div key={key}>
-                    <Select className="profile-select-options" value={this.state[key]} onChange={(e) => this.handleChange(e, key)} options={options} />
-                    <Label color={color}>{text}</Label>
-                </div>
+                <FormItem {...formItemLayout} label={text} key={key}>
+                {getFieldDecorator(key, {setFieldsValue: userVal[key], initialValue: userVal[key],
+                    rules: [
+                    { required: true, message: 'Select options' },
+                    ],
+                }, )(
+                    <Select className="profile-select-options" >
+                        {options.map(({value}) => <Option key={value} value={value}>{value}</Option>)}
+                    </Select>
+                )}
+                    
+                </FormItem>
             )
         })
 
         return elem;
     }
 
-    handleChange = (e, key) => {
-        this.setState({ [key]: e })
-    }
-
     handleSave = e => {
-        e.preventDefault();
-        this.setState({ notification: true })
-        this.timeOut = setTimeout(() => this.setState({ notification: false }), 1500)
-        const { good, notBad, bad } = this.state;
-        this.props.handleUpdateRepetitionsFun({ good, notBad, bad});
+
+       e.preventDefault();
+       this.props.form.validateFields((err, values) => {
+           const { good, notBad, bad} = values
+           console.log(values)
+        if (!err) {
+          this.props.handleUpdateRepetitionsFun({ good, notBad, bad});
+        }
+      });
+
+        
     }
 
     render() {
         const { userVal } = this.props;
-        const { notification } = this.state;
+        const { getFieldDecorator } = this.props.form;
+        const formItemLayout = {
+            labelCol: {span: 6},
+            wrapperCol: {span: 18}
+          };
         return (
             <div className="profile-wrapper">
-                <div className="profile-card">
-                {notification ?
-                             <Message positive>Your profile has been updated</Message>
-                        : null}
-                        <div className="profile-heading">
-                            {userVal.username}
-                            <Button floated="right" size="mini" basic color='red'>Delete account</Button>
-                        </div>
-                        <p>Repetitions settings <Icon name="setting" /></p>
-                        <Form className="profile-form" onSubmit={e => this.handleSave(e)}>
-                            {this.renderRepetitions(userVal)}
-                            <Form.Button fluid color="green">Save</Form.Button>
-                        </Form>
-                </div>
+            <p>Here you can define frequently of flashcards repetitions</p>
+            <Form style={{ width: '100%'}} layout="vertical" onSubmit={this.handleSave}>
+                {this.renderRepetitions(formItemLayout, getFieldDecorator, userVal)}
+                <FormItem wrapperCol={{ span: 12, offset: 6 }}>
+                
+                <Button  type="primary" htmlType="submit">
+                    Save
+                </Button>
+                </FormItem>
+            </Form>
             </div>
         )
     }
 }
 
+ProfileEdit = Form.create()(ProfileEdit)
+
 export default props => (
     <AppConsumer>
-        {({ userVal, handleUpdateRepetitionsFun }) => <ProfileEdit {...props} handleUpdateRepetitionsFun={handleUpdateRepetitionsFun} userVal={userVal} />}
+        {({ userVal, handleUpdateRepetitionsFun, statusAddVal }) => <ProfileEdit {...props} statusAddVal={statusAddVal} handleUpdateRepetitionsFun={handleUpdateRepetitionsFun} userVal={userVal} />}
     </AppConsumer>
 )
