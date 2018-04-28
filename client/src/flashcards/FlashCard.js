@@ -91,7 +91,6 @@ class FlashCard extends Component {
                 <Card.Content>
                     <Card.Header>
                         {original}
-
                     </Card.Header>
                     <Card.Meta>
                         {category}

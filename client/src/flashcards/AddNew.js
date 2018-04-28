@@ -10,11 +10,11 @@ const Option = Select.Option;
 class AddNew extends Component {
 
     componentWillReceiveProps(nextProps){
-    if(nextProps.statusAddVal === true && this.state.original !== '') {
-        message.success('Flashcard has been added', 1);
-       this.props.form.resetFields();
-       this.setState({original: '', translation: '', show: false});
-    }
+        if(nextProps.statusAddVal === true && this.state.original !== '') {
+            message.success('Flashcard has been added', 1);
+        this.props.form.resetFields();
+        this.setState({original: '', translation: '', show: false});
+        }
     }
 
     state = {
@@ -102,7 +102,7 @@ class AddNew extends Component {
                         })(
                             <Select onSelect={this.handleFormChange} mode="combobox" >
                             {
-                                categoryVal.map(({value}) => <Option key={value} value={value}>{value}</Option>)
+                                categoryVal.map((value, i) => <Option key={i} value={value}>{value}</Option>)
                             }
                             </Select>
                         )}

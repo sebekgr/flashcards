@@ -1,7 +1,6 @@
-import { Button, Modal} from 'semantic-ui-react'
 import React, { Component, Fragment } from 'react'
 import { AppConsumer } from '../StateContext';
-import { Table, Popconfirm, Select, Input  } from 'antd';
+import { Table, Popconfirm, Select, Input, Modal, Button  } from 'antd';
 const Option = Select.Option;
 const EditableCell = ({ editable, value, onChange }) => {
   return (
@@ -19,7 +18,7 @@ const EditableCellSelect = ({ editable, value, categories, onChange }) => {
     <div>
     {editable
       ? <Select style={{ margin: '-5px 0' }} value={value} onChange={e => onChange(e)}>
-          {categories.map(({key, value}) => <Option key={key} value={value}>{value}</Option>)}
+          {categories.map((value, i) => <Option key={i} value={value}>{value}</Option>)}
         </Select>
       : value
     }
@@ -33,10 +32,10 @@ class EditCategory extends Component {
     super(props);
 
     this.state = {
-      data: this.props.currentGroupVal,
+      data: [],
       filtered: false,
       searchText: '',
-      filteredData: this.props.currentGroupVal,
+      filteredData: [],
     }
     this.cacheData = this.state.data.map(item => ({ ...item }));
 
@@ -44,8 +43,6 @@ class EditCategory extends Component {
       title: 'Status',
       dataIndex: 'status',
       width: '20%',
-      onFilter: (title, record) => record.status.indexOf(title) === 0,
-      sorter: (a, b) => a.status.length - b.status.length,
     }, {
       title: 'Category',
       dataIndex: 'category',
@@ -95,18 +92,30 @@ class EditCategory extends Component {
 
   }
 
- componentWillReceiveProps(props){
-    if(props.currentGroupVal !== null) {
-      const data = props.currentGroupVal.map(({ _id, original, repetition, translation, category }) => {
+  componentWillMount(){
+    const data = this.props.currentGroupVal.map(({_id, original, repetition, translation, category}) => {
+      let status;
+      if(repetition === 0) status = 'Good';
+      else if(repetition === 1) status = 'Not Bad';
+      else status = 'Bad';
+      return {key: _id, status, category, original, translation}
+    });
+    this.setState({data, filteredData: data});
+  }
+
+  componentWillReceiveProps(nextProps){
+    if(nextProps.currentGroupVal !== this.props.currentGroupVal) {
+      const data = nextProps.currentGroupVal.map(({_id, original, repetition, translation, category}) => {
         let status;
-        if (repetition === 0) status = 'Good';
-        if (repetition === 1) status = 'Not bad';
-        if (repetition === 2) status = 'Bad';
-        return { key: _id, status, category, original, translation}
+        if(repetition === 0) status = 'Good';
+        else if(repetition === 1) status = 'Not Bad';
+        else status = 'Bad';
+        return {key: _id, status, category, original, translation}
       });
-      this.setState({data, filteredData: data})
+      this.setState({data, filteredData: data});
     }
   }
+
 
   renderCategory(text, record, column){
     return (
@@ -176,23 +185,28 @@ class EditCategory extends Component {
   }
 
   render() {
-    const { resetCurrentGroupFun, modalOpen } = this.props;
-    const {data, filteredData, searchText} = this.state;
+    const {visible, onCancel} = this.props;
+    let {data, filteredData, searchText, sortedInfo, filteredInfo} = this.state;
+    sortedInfo = sortedInfo || {};
+    filteredInfo = filteredInfo || {};
     return (
       <Fragment>
-        <Modal style={{background: '#444242'}} size="fullscreen" open={modalOpen} onClose={resetCurrentGroupFun}>
-         <Modal.Header style={{background: '#444242'}}>
-         <div className="custom-filter-dropdown">
-          <Button onClick={this.props.onClose}>Close</Button>
+        <Modal
+                    wrapClassName="vertical-center-modal"
+                    visible={true}
+                    onCancel={onCancel}
+                    footer={null}
+                    width="90vw"
+                    >
+         <div className="custom-filter">
             <Input
               placeholder="Search..."
               value={this.state.searchText}
               onChange={this.onSearch}
             />
           </div>
-          </Modal.Header>
             <Table size="large" scroll={{ y: '45vh' }} columns={this.columns} dataSource={searchText === '' ? data : filteredData} pagination={{ pageSize: 10 }} />
-        </Modal>
+            </Modal>
       </Fragment>
     )
   }
@@ -201,6 +215,6 @@ class EditCategory extends Component {
 
 export default props => (
   <AppConsumer>
-    {({ currentGroupVal, updateFlashCardFun,  categoryVal, removeFlashCardFun}) => <EditCategory {...props} removeFlashCardFun={removeFlashCardFun} categoryVal={categoryVal} updateFlashCardFun={updateFlashCardFun} currentGroupVal={currentGroupVal} />}
+    {({ updateFlashCardFun, currentGroupVal, categoryVal, removeFlashCardFun}) => <EditCategory currentGroupVal={currentGroupVal} {...props} removeFlashCardFun={removeFlashCardFun} categoryVal={categoryVal} updateFlashCardFun={updateFlashCardFun} />}
   </AppConsumer>
 )

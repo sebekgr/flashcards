@@ -25,12 +25,7 @@ class MyProvider extends Component {
     async componentDidMount() {
         const res = await axios.get('/api/current_user');
         const flashcards = await axios.get(`/api/flashcards/${res.data._id}`);
-        const category = []
-        res.data.category.forEach((cat, i) =>
-            category.push({ key: cat, value: cat, text: cat })
-        );
-        const { _id, username, good, notBad, bad } = res.data
-
+        const { _id, username, good, notBad, bad, category } = res.data
         this.setState({ user: { _id, username, good, notBad, bad}, category, flashcards: flashcards.data });
     }
 
@@ -62,7 +57,6 @@ class MyProvider extends Component {
     }
 
     handleUpdateFlashCard = async data => {
-        console.log(data);
         const flashcard = await axios.patch(`/api/flashcards/${data._id}`, data);
         if (flashcard.status === 200) {
             
@@ -100,10 +94,9 @@ class MyProvider extends Component {
         const id = this.state.user._id;
         try {
             const reqCategory = await axios.put(`/api/${id}/add/category`, { newCategory: value.trim() });
-            if (reqCategory.status === 200) {
-                const newCategory = { key: value, text: value, value };
+            if (reqCategory.status === 200) {                
                 this.setState(prev => ({
-                    category: [newCategory, ...prev.category]
+                    category: [reqCategory.data, ...prev.category]
                 }))
             }
         } catch (err) {

@@ -1,35 +1,21 @@
 import React, {Component, Fragment} from 'react';
-import { List, Segment  } from 'semantic-ui-react'
 import Category from './Category';
 import {AppConsumer} from '../StateContext';
-
+import { List } from 'antd';
 class Categorylist extends Component {
-
-
-
-      renderCategoryList(){
-        const {flashCardsVal, categoryVal} = this.props;
-        let categoryGroup = categoryVal.map((cat, i) => {
-        let flashcards = flashCardsVal.filter(flashcard => flashcard.category ===  cat.value)
-        let good = flashcards.filter(bad => bad.repetition === 0).length;
-        let notBad = flashcards.filter(bad => bad.repetition === 1).length;
-        let bad = flashcards.filter(bad => bad.repetition === 2).length;
-            return <List.Item key={i}><Category good={good} bad={bad} notBad={notBad} category={cat.value} flashcards={flashcards}/></List.Item>
-        }) 
-        return categoryGroup.reverse()
-      }
-    
-
     render(){
        return (
             <Fragment>
-                <List.Item>
-                        <List selection horizontal>
-                            
-                                {this.renderCategoryList()}
-                            
-                         </List>
-               </List.Item>
+                <List className="category-list"
+                  grid={{ gutter: 16, xs: 1, sm: 2, md: 4, lg: 4, xl: 6, xxl: 3 }}
+                  style={{width: '100%', textAlign: 'center'}}
+                    dataSource={this.props.categoryVal}
+                    renderItem={item => (
+                      <List.Item style={{display: 'flex', justifyContent:'space-around'}} key={item}>
+                        <Category category={item} />
+                      </List.Item>
+                    )}
+                  />
                </Fragment>
         )
     }
@@ -37,6 +23,6 @@ class Categorylist extends Component {
 
 export default props => (
     <AppConsumer>
-      {({flashCardsVal, categoryVal}) => <Categorylist {...props} categoryVal={categoryVal} flashCardsVal={flashCardsVal}/>}
+      {({categoryVal}) => <Categorylist {...props} categoryVal={categoryVal} />}
     </AppConsumer>
   )

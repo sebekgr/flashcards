@@ -27,7 +27,7 @@ const ExistFlashcard = (props) => {
                     <select id="category"
                     defaultValue={isExist.category}
                      >
-                        {categoryList.map(({value}) => <option key={value} value={value}>{value}</option> )}
+                        {categoryList.map((value) => <option key={value} value={value}>{value}</option> )}
                     </select>
                 </div>
                 <div className="btn-action">
