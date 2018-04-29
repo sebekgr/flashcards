@@ -46,7 +46,7 @@ class MyProvider extends Component {
     }
 
     handleAddFlashCard = async data => {
-        const isCategory = this.state.category.find(category => category.value === data.category);
+        const isCategory = this.state.category.find(category => category === data.category);
         if(!isCategory) await this.handleAddCategory(data.category);
         const flashcard = await axios.post(`/api/flashcards/add`, data);
         if (flashcard.status === 200) {
@@ -92,16 +92,17 @@ class MyProvider extends Component {
 
     handleAddCategory = async value => {
         const id = this.state.user._id;
-        try {
-            const reqCategory = await axios.put(`/api/${id}/add/category`, { newCategory: value.trim() });
-            if (reqCategory.status === 200) {                
-                this.setState(prev => ({
-                    category: [reqCategory.data, ...prev.category]
-                }))
+            try {
+                const reqCategory = await axios.put(`/api/${id}/add/category`, { newCategory: value.trim() });
+                if (reqCategory.status === 200) {                
+                    this.setState(prev => ({
+                        category: [reqCategory.data, ...prev.category]
+                    }))
+                }
+            } catch (err) {
+                console.log(err);
             }
-        } catch (err) {
-            console.log(err);
-        }
+        
     }
 
     handleSetCurrentGroup = (categoryName, isLearning = null) => {

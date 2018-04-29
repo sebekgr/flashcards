@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react'
 import { AppConsumer } from '../StateContext';
-import { Table, Popconfirm, Select, Input, Modal, Button  } from 'antd';
+import { Table, Popconfirm, Select, Input, Modal, Button, Form, Icon  } from 'antd';
 const Option = Select.Option;
 const EditableCell = ({ editable, value, onChange }) => {
   return (
@@ -36,6 +36,10 @@ class EditCategory extends Component {
       filtered: false,
       searchText: '',
       filteredData: [],
+      categoryNameEdit: false,
+      categoryName: props.category,
+      selectedRowKeys: [],
+      isEditing: false,
     }
     this.cacheData = this.state.data.map(item => ({ ...item }));
 
@@ -183,29 +187,95 @@ class EditCategory extends Component {
     const foundText = data.filter(data => data.original.toLowerCase().includes(target.value.toLowerCase()) || data.translation.toLowerCase().includes(target.value.toLowerCase()));
     this.setState({searchText: target.value, filteredData: foundText})
   }
+  onSelectChange = (selectedRowKeys) => {
+    this.setState({ selectedRowKeys });
+    if(selectedRowKeys.length === 0) {
+      this.componentWillMount();
+      this.setState({isEditing: false});
+      
+    } //jesli zero to od edytowac i zmienic przycisk
+  }
 
-  render() {
-    const {visible, onCancel} = this.props;
-    let {data, filteredData, searchText, sortedInfo, filteredInfo} = this.state;
-    sortedInfo = sortedInfo || {};
-    filteredInfo = filteredInfo || {};
+  toggleCategoryName = () =>{
+    this.setState(prevState => ({categoryNameEdit: !prevState.categoryNameEdit}))
+  }
+
+  handleEditCategoryName = () => {
+
+  }
+  handleChangeCategoryName = ({target}) => {
+    this.setState({categoryName: target.value})
+  }
+
+  renderEditCategoryName(){
     return (
-      <Fragment>
-        <Modal
-                    wrapClassName="vertical-center-modal"
-                    visible={true}
-                    onCancel={onCancel}
-                    footer={null}
-                    width="90vw"
-                    >
-         <div className="custom-filter">
+      <Form onSubmit={this.handleEditCategoryname} onChange={this.handleChangeCategoryName}>
+        <Form.Item>
+        <Input value={this.state.categoryName} />
+        </Form.Item>
+        <Form.Item>
+        <Button htmlType="submit">Save</Button>
+        </Form.Item>
+        <Form.Item>
+        <Button onClick={this.toggleCategoryName}>Cancel</Button>
+        </Form.Item>
+      </Form>
+    )      
+  }
+
+  massiveEdit = who => {
+    
+    const {selectedRowKeys} = this.state;
+    this.setState(prevState => ({isEditing: !prevState.isEditing}))
+    for(let i = 0; i < selectedRowKeys.length; i++) {
+      this[who](selectedRowKeys[i]);
+    }
+  }
+
+  renderEditing = () => {
+      const {isEditing, selectedRowKeys} = this.state;
+      let disabled = selectedRowKeys.length === 0 ? true : false;
+    return !isEditing ? <Button disabled={disabled} onClick={(edit) =>this.massiveEdit('edit')}>Edit</Button> : <Button onClick={(cancel) => this.massiveEdit('cancel')}>Cancel</Button>
+  }
+
+  renderNotEdit(categoryNameEdit, categoryName){
+    return (
+      <div className="custom-filter">
+            {categoryNameEdit ? this.renderEditCategoryName() : <p>{categoryName} <Button onClick={this.toggleCategoryName} icon="edit" /></p> }
             <Input
               placeholder="Search..."
               value={this.state.searchText}
               onChange={this.onSearch}
             />
+            <Popconfirm title="This category with all flashcards ${<br>} will be delete, are you sure ?" okText="Yes" cancelText="No">
+              <Button icon="delete">Delete this category</Button>
+            </Popconfirm>
+            {this.renderEditing()}
           </div>
-            <Table size="large" scroll={{ y: '45vh' }} columns={this.columns} dataSource={searchText === '' ? data : filteredData} pagination={{ pageSize: 10 }} />
+    )
+  }
+
+  render() {
+    const {visible, onCancel} = this.props;
+    let {data, filteredData, searchText, sortedInfo, filteredInfo,categoryName, categoryNameEdit, selectedRowKeys} = this.state;
+    sortedInfo = sortedInfo || {};
+    filteredInfo = filteredInfo || {};
+    const rowSelection = {
+      selectedRowKeys,
+      onChange: this.onSelectChange,
+    };
+    return (
+      <Fragment>
+        <Modal
+          title={this.renderNotEdit(categoryNameEdit, categoryName)}
+          wrapClassName="vertical-center-modal"
+          visible={true}
+          onCancel={onCancel}
+          footer={null}
+          width="90vw"
+          >
+         
+            <Table rowSelection={rowSelection} size="large" scroll={{ y: '45vh' }} columns={this.columns} dataSource={searchText === '' ? data : filteredData} pagination={{ pageSize: 10 }} />
             </Modal>
       </Fragment>
     )

@@ -66,7 +66,7 @@ class Category extends Component {
                     </ButtonGroup>
                 </Modal> : null}
                 
-               { isModalOpen ? <EditCategory onCancel={this.handleCloseModal}/> : null }
+               { isModalOpen ? <EditCategory category={category.value} onCancel={this.handleCloseModal}/> : null }
                 
                <Card
                  title={category.value}
