@@ -200,8 +200,11 @@ class EditCategory extends Component {
     this.setState(prevState => ({categoryNameEdit: !prevState.categoryNameEdit}))
   }
 
-  handleEditCategoryName = () => {
-
+  handleEditCategoryName = e => {
+    e.preventDefault();
+    const {handleUpdateCategoryFun, category} = this.props;
+    const {categoryName} = this.state;
+    handleUpdateCategoryFun({currentName: category, newName: categoryName});
   }
   handleChangeCategoryName = ({target}) => {
     this.setState({categoryName: target.value})
@@ -209,9 +212,9 @@ class EditCategory extends Component {
 
   renderEditCategoryName(){
     return (
-      <Form onSubmit={this.handleEditCategoryname} onChange={this.handleChangeCategoryName}>
+      <Form onSubmit={this.handleEditCategoryName} onChange={this.handleChangeCategoryName}>
         <Form.Item>
-        <Input value={this.state.categoryName} />
+        <Input defaultValue={this.state.categoryName} />
         </Form.Item>
         <Form.Item>
         <Button htmlType="submit">Save</Button>
@@ -223,8 +226,7 @@ class EditCategory extends Component {
     )      
   }
 
-  massiveEdit = who => {
-    
+  massiveEdit = who => {    
     const {selectedRowKeys} = this.state;
     this.setState(prevState => ({isEditing: !prevState.isEditing}))
     for(let i = 0; i < selectedRowKeys.length; i++) {
@@ -232,11 +234,31 @@ class EditCategory extends Component {
     }
   }
 
-  renderEditing = () => {
-      const {isEditing, selectedRowKeys} = this.state;
-      let disabled = selectedRowKeys.length === 0 ? true : false;
-    return !isEditing ? <Button disabled={disabled} onClick={(edit) =>this.massiveEdit('edit')}>Edit</Button> : <Button onClick={(cancel) => this.massiveEdit('cancel')}>Cancel</Button>
+  massiveDelete = () => {
+    const {selectedRowKeys} = this.state;
+    for(let i = 0; i < selectedRowKeys.length; i++) {
+      this.delete(selectedRowKeys[i]);
+    }
+    this.setState({selectedRowKeys: []})
   }
+
+  handleDeleteCategory = () => {
+    this.props.handleRemoveCategoryFun(this.props.category);
+  }
+  renderEditing = () => {
+      let {isEditing, selectedRowKeys} = this.state;
+      let disabled = selectedRowKeys.length === 0 ? true : false;
+    return (
+      <Fragment>
+      <Popconfirm title="Are you sure ?" okText="Yes" cancelText="No" onConfirm={this.massiveDelete}>
+        <Button disabled={disabled} icon="delete">Delete flashcards</Button>
+      </Popconfirm>
+      {!isEditing ? <Button disabled={disabled} onClick={(edit) =>this.massiveEdit('edit')}>Edit</Button> : <Button onClick={(cancel) => this.massiveEdit('cancel')}>Cancel</Button>}
+      </Fragment>
+    )
+      
+  }
+
 
   renderNotEdit(categoryNameEdit, categoryName){
     return (
@@ -247,7 +269,7 @@ class EditCategory extends Component {
               value={this.state.searchText}
               onChange={this.onSearch}
             />
-            <Popconfirm title="This category with all flashcards ${<br>} will be delete, are you sure ?" okText="Yes" cancelText="No">
+            <Popconfirm onConfirm={this.handleDeleteCategory} title="This category with all flashcards will be delete, are you sure ?" okText="Yes" cancelText="No">
               <Button icon="delete">Delete this category</Button>
             </Popconfirm>
             {this.renderEditing()}
@@ -285,6 +307,6 @@ class EditCategory extends Component {
 
 export default props => (
   <AppConsumer>
-    {({ updateFlashCardFun, currentGroupVal, categoryVal, removeFlashCardFun}) => <EditCategory currentGroupVal={currentGroupVal} {...props} removeFlashCardFun={removeFlashCardFun} categoryVal={categoryVal} updateFlashCardFun={updateFlashCardFun} />}
+    {({handleRemoveCategoryFun, updateFlashCardFun, handleUpdateCategoryFun, currentGroupVal, categoryVal, removeFlashCardFun}) => <EditCategory handleRemoveCategoryFun={handleRemoveCategoryFun} handleUpdateCategoryFun={handleUpdateCategoryFun} currentGroupVal={currentGroupVal} {...props} removeFlashCardFun={removeFlashCardFun} categoryVal={categoryVal} updateFlashCardFun={updateFlashCardFun} />}
   </AppConsumer>
 )

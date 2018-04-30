@@ -1,10 +1,10 @@
 const requireLogin = require('../middlewares/requireLogin');
 const mongoose = require('mongoose');
 const Flashcard = mongoose.model('flashcards')
+
 module.exports = app => {
 
     //get list of flashcards
-
     app.get('/api/flashcards/:user', requireLogin, async (req, res) => {
         
         const flashcard = await Flashcard.find({_user: req.params.user}).select('-__v -_user');

@@ -31,18 +31,21 @@ class MyProvider extends Component {
 
     handleUpdateRepetitions = async data => {
         const {user} = this.state
-        const id = this.state.user._id;
-        const {good, notBad, bad} = data;
+        const id = this.state.user._id;        
         const repetitions = await axios.patch(`/api/${id}/repetitions`, data);
         if(repetitions.status === 200) {
-            
-            this.setState({good, notBad, bad, statusAdd: true});
+            const {good, notBad, bad} = data;            
+            this.setState(
+                {statusAdd: true,
+                user: {...user, good, notBad, bad}
+                }
+            );
             this.helperChangeStatus();
         }
     }
 
     helperChangeStatus(){
-       this.timeOut = setTimeout(() => this.setState({statusAdd: false }), 1500);
+       this.timeOut = setTimeout(() => this.setState({statusAdd: false }), 200);
     }
 
     handleAddFlashCard = async data => {
@@ -58,8 +61,7 @@ class MyProvider extends Component {
 
     handleUpdateFlashCard = async data => {
         const flashcard = await axios.patch(`/api/flashcards/${data._id}`, data);
-        if (flashcard.status === 200) {
-            
+        if (flashcard.status === 200) {            
             const { translation, original, category, _id } = flashcard.data;
             const updateFlashcards = this.state.flashcards.map(flashcard => {
                 if (flashcard._id === _id) {
@@ -73,8 +75,7 @@ class MyProvider extends Component {
             } else {
                 this.setState({ flashcards: updateFlashcards, statusAdd: true});
             }
-            this.helperChangeStatus();
-            
+            this.helperChangeStatus();            
         }
     }
 
@@ -88,6 +89,21 @@ class MyProvider extends Component {
             }
             this.setState({ flashcards: othersFlashCards});
         }
+    }
+
+    handleRemoveCategory = async name => {
+        const id = this.state.user._id;
+            try {
+                const deletedCategory = await axios.delete(`/api/${id}/delete/category/${name}`);
+                if (deletedCategory.status === 200) {
+                    const {flashcards, category} = this.state;               
+                   const categoryList = category.filter(cat => cat !== name);
+                   const flashcardsList = flashcards.filter(flashcard => flashcard.category !== name);
+                   this.setState({flashcards: flashcardsList, category: categoryList});
+                }
+            } catch (err) {
+                console.log(err);
+            }
     }
 
     handleAddCategory = async value => {
@@ -104,6 +120,26 @@ class MyProvider extends Component {
             }
         
     }
+    handleUpdateCategory = async value => {
+        const id = this.state.user._id;
+        try {
+            const updateCategory = await axios.put(`/api/${id}/edit/category`, value);
+            if(updateCategory.status === 200) {
+                const {category, flashcards} = this.state;
+                const catList = category.filter(cat => cat !== value.currentName);
+                const flashcardsList = flashcards.map(flashcard => {
+                    if(flashcard.category === value.currentName) {
+                        return {...flashcard, category: value.newName}
+                    } else {
+                        return flashcard
+                    }
+                })
+                this.setState({category: [value.newName, ...catList], currentGroup: [], flashcards: flashcardsList});
+            }
+        } catch(err) {
+            console.log(err);
+        }
+    }
 
     handleSetCurrentGroup = (categoryName, isLearning = null) => {
         const {flashcards} = this.state;
@@ -113,8 +149,11 @@ class MyProvider extends Component {
         if(isLearning) {
             const {good, notBad, bad} = this.state.user;
             const countGood = +options.find(op => op.text === good).key
+            console.log(countGood)
             const countNotBad = +options.find(op => op.text === notBad).key
+            console.log(countNotBad)
             const countBad = +options.find(op => op.text === bad).key
+            console.log(countBad)
             let d = new Date().toLocaleString();
             let l = new Date(d).getTime();
             +l;            
@@ -129,6 +168,7 @@ class MyProvider extends Component {
                      return  current.modifyAt + countBad <= l
                 }
             })
+            console.log(isReady);
             const compare = (a , b) => {
                 const aState = a.repetition
                 const bState = b.repetition
@@ -152,10 +192,17 @@ class MyProvider extends Component {
     }
 
     handleUpdateStatusFlashCard = async (id, status) => {
-        const { flashcards } = this.state;
+        const { flashcards } = this.state;  
         let d = new Date().toLocaleString();
         let l = new Date(d).getTime();
         +l;
+        if(status === 'good') {
+            status = 0
+        } else if (status === 'notbad') {
+            status = 1
+        } else if(status === 'bad'){
+            status = 2
+        }
         const res = await axios.put(`/api/flashcards/${id}/status`, {status, modifyAt: l});
         const updateFlashcards = flashcards.map(flashcard => {
             if (flashcard._id === id) {
@@ -166,11 +213,6 @@ class MyProvider extends Component {
         this.setState({flashcards: updateFlashcards});
         
     }
-
-
-    
-    
-
 
     render() {
         return (
@@ -193,7 +235,9 @@ class MyProvider extends Component {
                 updateStatusFlashCardFun: this.handleUpdateStatusFlashCard,
                 resetCurrentGroupFun: this.handleResetCurrentGroup,
                 handleUpdateRepetitionsFun: this.handleUpdateRepetitions,
-                handleCurrentEditedGroupFun: this.handleCurrentEditedGroup
+                handleCurrentEditedGroupFun: this.handleCurrentEditedGroup,
+                handleUpdateCategoryFun: this.handleUpdateCategory,
+                handleRemoveCategoryFun : this.handleRemoveCategory,
 
             }}>
                 {this.props.children}

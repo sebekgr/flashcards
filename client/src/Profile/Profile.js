@@ -8,7 +8,7 @@ const routeList = [
   { key: '/edit', name: 'Settings' },
   { key: '/add', name: 'Add flashcard' },
   { key: '/categorylist', name: 'Category list' },
-  { key: '/latestflashcards', name: 'Latest flashcards' }
+  { key: '/search', name: 'Search flashcards' }
 ]
 
 const Stats = () => <div> some stats</div>
@@ -28,9 +28,3 @@ const Profile = ({ location, match }) => {
   )
 }
 export default Profile;
-
-        /* <Menu>
-          {
-            routeList.map(({ key, name }) => <Menu.Item active={location.pathname === `${match.path}${key}`} key={name} name={name}> <Link to={`${match.path}${key}`}> {name}</Link> </Menu.Item>)
-          }
-        </Menu> */

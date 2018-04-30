@@ -41,11 +41,9 @@ class ProfileEdit extends Component {
     }
 
     handleSave = e => {
-
        e.preventDefault();
        this.props.form.validateFields((err, values) => {
            const { good, notBad, bad} = values
-           console.log(values)
         if (!err) {
           this.props.handleUpdateRepetitionsFun({ good, notBad, bad});
         }

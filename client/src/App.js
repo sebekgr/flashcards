@@ -6,7 +6,7 @@ import LearningCard from './Learning/LearningCard';
 import ProfileEdit from './Profile/ProfileEdit';
 import AddNew from './flashcards/AddNew';
 import CategoryList from './Profile/CategoryList';
-import FlashCardList from './flashcards/FlashCardList';
+import SearchFlashcards from './flashcards/SearchFlashcards';
 
 class App extends Component {
   render() {
@@ -18,8 +18,9 @@ class App extends Component {
                 <Route path="/profile/edit" component={ProfileEdit} />
                 <Route path="/profile/add" component={AddNew} />
                 <Route path="/profile/categorylist" component={CategoryList} />
-                <Route path="/profile/latestflashcards" component={FlashCardList} />
+                <Route path="/profile/search" component={SearchFlashcards} />
                 <Route exact path="/learning" component={LearningCard} />
+                
           </div>
         </Router>
     );

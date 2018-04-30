@@ -1,6 +1,7 @@
 const requireLogin = require('../middlewares/requireLogin');
 const mongoose = require('mongoose');
-const User = mongoose.model('users')
+const User = mongoose.model('users');
+const Flashcards = mongoose.model('flashcards');
 
 module.exports = app => {
 
@@ -42,5 +43,31 @@ module.exports = app => {
         }
     
     })
+
+    //update category name
+    app.put('/api/:user/edit/category', requireLogin, async (req, res) => {
+       const {currentName, newName} = req.body;
+       console.log(currentName);
+       console.log(newName);
+       console.log(req.params.user);
+       try {
+         await User.findOneAndUpdate({_id: req.params.user, category: currentName}, {$set: {"category.$": newName}}, {new: true});
+        const flashcards = await Flashcards.where({category: currentName}).setOptions({ multi: true }).update({ $set: {category: newName}}).exec();
+         res.send(flashcards).status(200);
+       } catch(err) {
+           res.send(err).status(500);
+       }    
+    })
+
+    //delete category + flashcards
+    app.delete('/api/:user/delete/category/:name', requireLogin, async (req, res) => {
+        try {
+            await User.where({_id: req.params.user}).update({$pull: {category: req.params.name}}).exec();
+            await Flashcards.deleteMany({_user: req.params.user, category: req.params.name});
+            res.send('category and flashcards has been removed').status(200);
+          } catch(err) {
+              res.send(err).status(500);
+          }     
+     })
 
 }

@@ -4,9 +4,6 @@ import {AppConsumer} from '../StateContext';
 import ExistFlashcard from './ExistFlashcard';
 const FormItem = Form.Item;
 const Option = Select.Option;
-
-
-
 class AddNew extends Component {
 
     componentWillReceiveProps(nextProps){
@@ -42,8 +39,7 @@ class AddNew extends Component {
                 const localDate = new Date().toLocaleString();
                 const dateToMs = new Date(localDate).getTime();
                 addFlashCardFun({original, translation, category, _user: userVal._id, createAt: dateToMs});
-            }
-            
+            }            
           }
         });
       }
