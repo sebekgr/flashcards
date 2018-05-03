@@ -30,9 +30,7 @@ require('./routes/userRoutes')(app);
 require('./routes/flashcardsRoutes')(app);
 
 
-// mongoose.connect(keys.mongoDB)
-mongoose.connect('mongodb://sebekgr:flash@ds135866.mlab.com:35866/flashcards-production');
-
+mongoose.connect(keys.mongoDB)
 
 if(process.env.NODE_ENV === 'production') {
     app.use(express.static('client/build'));

@@ -3,7 +3,7 @@ import {Button} from 'antd';
 
 
 const ExistFlashcard = (props) => {
-    const {categoryList, category, translation, original, isExist} = props;
+    const {categoryList, isExist} = props;
     return(
         <div style={{color: 'black'}}>
             <p>This flashcard already exist, update or cancel</p>

@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
-import { Form, Input, Button, Select, message, Alert   } from 'antd';
+import { Form, Input, Button, Select, message, Alert, Row, Col  } from 'antd';
 import {AppConsumer} from '../StateContext';
 import ExistFlashcard from './ExistFlashcard';
+import {gridConfigContent} from '../gridConfigContent';
 const FormItem = Form.Item;
 const Option = Select.Option;
 class AddNew extends Component {
@@ -30,7 +31,7 @@ class AddNew extends Component {
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
           if (!err) {
-            const {addFlashCardFun, userVal, flashCardsVal, updateFlashCardFun} = this.props;
+            const {addFlashCardFun, userVal, flashCardsVal} = this.props;
             const {original, translation, category} = this.state;
             const isExistTranslation = flashCardsVal.find(flashcard => flashcard.translation === translation);
             if(isExistTranslation) {
@@ -63,10 +64,11 @@ class AddNew extends Component {
 
     render(){
         const {categoryVal} = this.props;
-        const {category, original, translation, show, isExist} = this.state;
+        const {category, original, translation, show} = this.state;
         const { getFieldDecorator } = this.props.form;
         return(
-            <div className="add-flashcard-wrapper">
+            <Row className="row-main-wrapper">
+                <Col {...gridConfigContent}>
                {show ?
                 <Alert
                     message="Duplicate detection"
@@ -105,13 +107,13 @@ class AddNew extends Component {
                         
                     </FormItem>
                     <FormItem>
-                    <Button type="primary" htmlType="submit" className="login-form-button">
+                    <Button type="primary" htmlType="submit">
                        Add
                     </Button>
                     </FormItem>
                 </Form>
-             
-            </div>
+             </Col>
+            </Row>
           
         )
     }

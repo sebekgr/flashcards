@@ -5,8 +5,6 @@ import {Link} from 'react-router-dom';
 import ChoiceGroup from './ChoiceGroup';
 import StatusGroup from './StatusGroup';
 
-const ButtonGroup = Button.Group;
-
 class LearningComponent extends Component {
     constructor(props){
         super(props);
@@ -47,7 +45,7 @@ class LearningComponent extends Component {
     handleCheck = e =>{
         e.preventDefault();
         const { index, answer, choiceAnswer } = this.state;
-        const { currentGroupVal, choiceVal } = this.props;
+        const { currentGroupVal } = this.props;
         const currentWord = currentGroupVal[index][choiceAnswer];
         const isCorrect = (currentWord.toLowerCase().replace(/\s/g, "") === answer.trim().toLowerCase().replace(/\s/g, ""))
         this.setState({isCorrect,  isChecking: true});
@@ -58,10 +56,9 @@ class LearningComponent extends Component {
     }
 
     setStatus = ({target}) => {
-        const {choiceShow, choiceAnswer} = this.state;
         const { updateStatusFlashCardFun, currentGroupVal} = this.props;
         const { index, choice} = this.state;
-        this.props.updateStatusFlashCardFun(currentGroupVal[index]._id, target.name)
+        updateStatusFlashCardFun(currentGroupVal[index]._id, target.name)
         if(choice === 'random') {
             let randomIndex = Math.round(Math.random());
             let setToShow = this.random[randomIndex];
@@ -78,7 +75,7 @@ class LearningComponent extends Component {
 
     renderStart(){
         const {index, choice, answer, isChecking, choiceAnswer, choiceShow} = this.state;
-        const {currentGroupVal, choiceVal} = this.props;
+        const {currentGroupVal} = this.props;
         return (
             <Fragment>
                 {isChecking ? <span className="correct-answer">{currentGroupVal[index][choiceAnswer]}</span> : null}

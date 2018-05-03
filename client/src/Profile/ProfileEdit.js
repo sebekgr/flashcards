@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { AppConsumer } from '../StateContext';
-import { Select,  Form, Input, Button, message } from 'antd';
+import { Select,  Form, Button, message, Col, Row } from 'antd';
+import {gridConfigContent} from '../gridConfigContent';
 const Option = Select.Option;
 const FormItem = Form.Item;
 const names = [{ key: 'good', text: 'Good', color: 'green' }, { key: 'notBad', text: 'Not bad', color: 'blue' }, { key: 'bad', text: 'Bad', color: 'red' }]
@@ -19,10 +20,10 @@ class ProfileEdit extends Component {
         if(statusAddVal) message.success('Profile has been updated', 1);
     }
 
-    renderRepetitions(formItemLayout, getFieldDecorator, userVal) {
+    renderRepetitions(getFieldDecorator, userVal) {
         let elem = names.map(({text, key, color}) => {
             return(
-                <FormItem {...formItemLayout} label={text} key={key}>
+                <FormItem label={text} key={key}>
                 {getFieldDecorator(key, {setFieldsValue: userVal[key], initialValue: userVal[key],
                     rules: [
                     { required: true, message: 'Select options' },
@@ -55,23 +56,18 @@ class ProfileEdit extends Component {
     render() {
         const { userVal } = this.props;
         const { getFieldDecorator } = this.props.form;
-        const formItemLayout = {
-            labelCol: {span: 6},
-            wrapperCol: {span: 18}
-          };
         return (
-            <div className="profile-wrapper">
+            <Row className="row-main-wrapper">
+            <Col {...gridConfigContent}>
             <p>Here you can define frequently of flashcards repetitions</p>
             <Form style={{ width: '100%'}} layout="vertical" onSubmit={this.handleSave}>
-                {this.renderRepetitions(formItemLayout, getFieldDecorator, userVal)}
-                <FormItem wrapperCol={{ span: 12, offset: 6 }}>
-                
-                <Button  type="primary" htmlType="submit">
-                    Save
-                </Button>
+                {this.renderRepetitions(getFieldDecorator, userVal)}
+                <FormItem >
+                <Button  type="primary" htmlType="submit">Save</Button>
                 </FormItem>
             </Form>
-            </div>
+            </Col>
+            </Row>
         )
     }
 }

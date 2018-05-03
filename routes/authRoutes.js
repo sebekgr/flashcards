@@ -10,7 +10,7 @@ module.exports = app => {
     /// /auth/google/redirect
     app.get('/auth/google/redirect',
         passport.authenticate('google'), (req, res) => {
-            res.redirect('http://localhost:3000/profile') //in production change address for '/'
+            res.redirect('http://localhost:3000/') //in production change address for '/'
         });
 
     

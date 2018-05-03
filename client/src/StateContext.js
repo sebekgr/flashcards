@@ -156,19 +156,17 @@ class MyProvider extends Component {
             console.log(countBad)
             let d = new Date().toLocaleString();
             let l = new Date(d).getTime();
-            +l;            
             const isReady = currentGroup.filter(current => {
                 if(current.repetition === 0) {
-                   return current.modifyAt + countGood <= l
+                   return current.modifyAt + countGood <= +l
                 }
                 if(current.repetition === 1) {
-                   return current.modifyAt + countNotBad <= l
+                   return current.modifyAt + countNotBad <= +l
                 } 
                 if(current.repetition === 2) {
-                     return  current.modifyAt + countBad <= l
+                     return  current.modifyAt + countBad <= +l
                 }
             })
-            console.log(isReady);
             const compare = (a , b) => {
                 const aState = a.repetition
                 const bState = b.repetition
@@ -195,7 +193,6 @@ class MyProvider extends Component {
         const { flashcards } = this.state;  
         let d = new Date().toLocaleString();
         let l = new Date(d).getTime();
-        +l;
         if(status === 'good') {
             status = 0
         } else if (status === 'notbad') {
@@ -203,7 +200,7 @@ class MyProvider extends Component {
         } else if(status === 'bad'){
             status = 2
         }
-        const res = await axios.put(`/api/flashcards/${id}/status`, {status, modifyAt: l});
+        const res = await axios.put(`/api/flashcards/${id}/status`, {status, modifyAt: +l});
         const updateFlashcards = flashcards.map(flashcard => {
             if (flashcard._id === id) {
                 return res.data

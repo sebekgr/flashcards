@@ -1,7 +1,8 @@
-import React from 'react';
-import { Menu, Icon } from 'antd';
+import React, {Component} from 'react';
+import { Menu, Button } from 'antd';
 import { Link } from "react-router-dom";
-
+import Stats from './Stats';
+import gridConfig from '../gridConfig';
 
 const routeList = [
   { key: '', name: 'Statistics' },
@@ -11,20 +12,38 @@ const routeList = [
   { key: '/search', name: 'Search flashcards' }
 ]
 
-const Stats = () => <div> some stats</div>
+class Profile extends Component {
+  
+  constructor(props) {
+    super(props);
+    this.state = {toggleBtn: false}
+  }
 
-const Profile = ({ location, match }) => {
-  return (
-    <div className="menu-wrapper">
-      <Menu mode="horizontal">
-      <Menu.Item><Link to='/'>Home</Link></Menu.Item>
-        {
-          routeList.map(({ key, name }) => <Menu.Item active={location.pathname === `${match.path}${key}`} key={name} name={name}> <Link to={`${match.path}${key}`}> {name}</Link> </Menu.Item>)
-        }
-      </Menu>
+  handleToggle = () => {
+    const {toggleBtn} = this.state;
+    this.setState(prevState=> ({toggleBtn: !prevState.toggleBtn}));
+  }
 
-      {location.pathname === '/profile' ? <Stats /> : null}
-    </div>
-  )
+  render() {
+    let isSmall = window.innerWidth <= 670 ;
+    const {match, location} = this.props;
+    const {toggleBtn} = this.state;
+    let isToogled = toggleBtn ? 'menu-responsive active' : 'menu-responsive';
+    return (
+      <div>
+       {isSmall ? <Button onClick={this.handleToggle} icon={toggleBtn ? "menu-fold " : "menu-unfold"}>Menu </Button> : null}
+        <Menu onClick={this.handleToggle} className={isSmall ? isToogled : null}  mode={isSmall ? 'inline' : 'horizontal'} >
+        <Menu.Item><Link to='/'>Home</Link></Menu.Item>
+          {
+            routeList.map(({ key, name }) => <Menu.Item active={location.pathname === `${match.path}${key}`} key={name} name={name}> <Link to={`${match.path}${key}`}> {name}</Link> </Menu.Item>)
+          }
+        </Menu>
+  
+        {location.pathname === '/profile' ? <Stats /> : null}
+      </div>
+    )
 }
+}
+
+
 export default Profile;

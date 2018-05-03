@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react'
 import { AppConsumer } from '../StateContext';
-import { Table, Popconfirm, Select, Input, Modal, Button, Form, Icon  } from 'antd';
+import { Table, Popconfirm, Select, Input, Modal, Button, Form } from 'antd';
 const Option = Select.Option;
 const EditableCell = ({ editable, value, onChange }) => {
   return (
@@ -278,8 +278,8 @@ class EditCategory extends Component {
   }
 
   render() {
-    const {visible, onCancel} = this.props;
-    let {data, filteredData, searchText, sortedInfo, filteredInfo,categoryName, categoryNameEdit, selectedRowKeys} = this.state;
+    const {onCancel} = this.props;
+    let {data, filteredData, sortedInfo, filteredInfo, searchText, categoryName, categoryNameEdit, selectedRowKeys} = this.state;
     sortedInfo = sortedInfo || {};
     filteredInfo = filteredInfo || {};
     const rowSelection = {
@@ -290,11 +290,12 @@ class EditCategory extends Component {
       <Fragment>
         <Modal
           title={this.renderNotEdit(categoryNameEdit, categoryName)}
-          wrapClassName="vertical-center-modal"
           visible={true}
           onCancel={onCancel}
           footer={null}
           width="90vw"
+          destroyOnClose={true}
+          style={{ top: 20 }}
           >
          
             <Table rowSelection={rowSelection} size="large" scroll={{ y: '45vh' }} columns={this.columns} dataSource={searchText === '' ? data : filteredData} pagination={{ pageSize: 10 }} />

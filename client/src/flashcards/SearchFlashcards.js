@@ -1,7 +1,8 @@
 import React,{Component} from 'react';
 import FlashCard from './FlashCard';
-import {Form, Input} from 'antd';
+import {Input, Row, Col} from 'antd';
 import { AppConsumer } from '../StateContext';
+import {gridConfigContent} from '../gridConfigContent';
 const Search = Input.Search;
 
 class SearchFlashcards extends Component {
@@ -14,10 +15,13 @@ class SearchFlashcards extends Component {
     }
 
     handleChange = ({target}) => {
-        const {filtered, searchText} = this.state;
         const {flashCardsVal} = this.props;
-        let found = flashCardsVal.filter(flashcard => flashcard.original.toLowerCase().includes(target.value.toLowerCase()) || flashcard.translation.toLowerCase().includes(target.value.toLowerCase()));
-        this.setState({searchText: target.value, filtered: found});
+        if(this.state.searchText.length < 3) {
+            this.setState({searchText: target.value});
+        } else {
+            let found = flashCardsVal.filter(flashcard => flashcard.original.toLowerCase().includes(target.value.toLowerCase()) || flashcard.translation.toLowerCase().includes(target.value.toLowerCase()));
+            this.setState({searchText: target.value, filtered: found});
+        }        
         if(target.value === '') {
             this.setState({filtered: [], searchText: null})
         }
@@ -35,15 +39,18 @@ class SearchFlashcards extends Component {
     render(){
         const {searchText, filtered} = this.state;
         return (
-            <div>
-                <Search
+            <Row className="row-main-wrapper">
+                <Col {...gridConfigContent}>
+                <label htmlFor="search-input">At least 3 characters</label>
+                <Search style={{margin: '10px auto'}} id="search-input"
                     onChange={this.handleChange}
                     placeholder="Search flashcards"
                     enterButton
                     value={searchText}
                     />
                     {this.renderResults(searchText, filtered)}
-            </div>
+                </Col>
+            </Row>
         )
     }
 }

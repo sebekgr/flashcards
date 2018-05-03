@@ -5,7 +5,7 @@ const rewireLess = require('react-app-rewire-less');
   config = rewireLess.withLoaderOptions({
   modifyVars:
    { 
-
+   "@card-padding-base": "10px"
 
 
    },

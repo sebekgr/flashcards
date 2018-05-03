@@ -2,39 +2,32 @@ body,html{
     height:100%;
     min-height: 100%;
 }
-.ico-click{
-    cursor: pointer;
+/*row main wrapper*/
+.row-main-wrapper{
+    margin: 20px auto;
+    border: 1px solid blue;
 }
 /*main-wrapper*/
 .main-wrapper{
     border: 1px solid red;
+}
+.stats-wrapper{
     display: flex;
-    flex-flow: column nowrap;
-    justify-content: start;
-    align-items: center;
+    justify-content: space-around;
 }
-.welcome-heading{
-    font-size: 5vw;
-    text-transform: uppercase;
-    color: #fff;
-}
-
 /*menu*/
-
-.profile-wrapper{
-    display: flex;
-    flex-flow: column nowrap;
-    width: 30vw;
-    padding: 30px;
+.menu-responsive{
+    display: none;
 }
+.active {
+    display: block;
+}
+
 .add-flashcard-wrapper{
     width: 30vw;
 }
 
 /*add flashacrd*/
-.exist-form{
-    
-}
 .exist-form div {
     display: grid;
     grid-template-columns: .4fr 1fr;
@@ -81,12 +74,6 @@ body,html{
     padding: 20px 0 ;
 }
 
-.category-list .ant-row{
-    display: flex!important;
-    justify-content: space-around!important;
-}
-
-
 /*learning*/
 .ant-btn-group{
     display: block!important;
@@ -101,4 +88,20 @@ body,html{
 }
 .ant-card-meta-detail{
     margin: 10px auto;
+}
+
+.stats-container{
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+}
+.stats-group{
+    display: flex;
+    justify-content: center;
+}
+.stats-box{
+    margin: 10px;
+}
+.total-nr-stats{
+    font-size: 24px;
 }

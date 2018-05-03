@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
 import {AppConsumer} from './StateContext';
-import { Icon} from 'antd';
+import {Link} from 'react-router-dom';
+import { Icon, Row, Col} from 'antd';
+import {gridConfigContent} from './gridConfigContent';
 class Home extends Component {
 
   loginUser(name){
     return (
       <div>
         <p>You are login</p>
-        <p>Welcome <a href="/profile">{name}</a></p>
+        <p>Welcome <Link to='/profile'>{name}</Link></p>
         <a href="/auth/logout">Log out</a>
       </div>
     )
@@ -27,9 +29,11 @@ class Home extends Component {
     
     const {userVal} = this.props;
     return (
-        <div>
+        <Row type="flex" justify="center" align="middle" >
+          <Col>
           {userVal ? this.loginUser(userVal.username) : this.logoutUser()}
-        </div>
+          </Col>
+        </Row>
     );
   }
 }
