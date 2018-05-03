@@ -5,12 +5,8 @@ body,html{
 /*row main wrapper*/
 .row-main-wrapper{
     margin: 20px auto;
-    border: 1px solid blue;
 }
 /*main-wrapper*/
-.main-wrapper{
-    border: 1px solid red;
-}
 .stats-wrapper{
     display: flex;
     justify-content: space-around;
