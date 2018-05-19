@@ -43,10 +43,9 @@ module.exports = app => {
 
     //update status of flashcard
     app.put('/api/flashcards/:flashcard/status', requireLogin, async (req, res) => {
-        const {status} = req.body;
+        const {status} = req.body
         try {
-            const flashcard = await Flashcard.findByIdAndUpdate({_id: req.params.flashcard}, {repetition: status}, {"new" : true});
-            console.log(flashcard)
+            const flashcard = await Flashcard.findByIdAndUpdate({_id: req.params.flashcard}, {repetition: status, modifyAt: Date.now()}, {"new" : true});
             res.send(flashcard).status(200);
         }catch(err) {
             res.send(err).status(500)

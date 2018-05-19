@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Card,  Button, Form, Message } from 'semantic-ui-react'
+import { Card,  Button, Form, Message, Input } from 'semantic-ui-react'
 import { AppConsumer } from '../StateContext';
 
 
@@ -45,7 +45,7 @@ class LearningCard extends Component {
         const choice = choiceVal === 'original' ? 'translation' : 'original'
         const currentWord = currentGroupVal[currentIndex][choice];
 
-        if (currentWord.toLowerCase() === answer.trim().toLowerCase()) {
+        if (currentWord.toLowerCase().replace(/\s/g, "") === answer.trim().toLowerCase().replace(/\s/g, "")) {
             this.setState({result: true})
 
         } else {
@@ -91,10 +91,8 @@ class LearningCard extends Component {
                     <h2 style={{ margin: '20px auto', color: 'black' }}>{currentGroupVal[currentIndex][choiceVal]}</h2>
                     {renderResult ? <h1 style={{ fontSize: '36px', color: 'black' }}>{currentGroupVal[currentIndex][choice]}</h1> : null}
                     <Form autoComplete="off" onSubmit={e => this.handleAnswer(e)} onChange={this.handleChange}>
-                        <Form.Group>
                             <Form.Input autoComplete="off" disabled={disableCheck} value={this.state.answer} name="answer" placeholder='Provide answer' />
                             <Form.Button disabled={disableCheck}>Check</Form.Button>
-                        </Form.Group>
                     </Form>
                 </Card.Content>
                 <Card.Content textAlign="center">
@@ -126,10 +124,10 @@ class LearningCard extends Component {
         const { currentIndex, lastIndex } = this.state;
         const { currentGroupVal, choiceVal } = this.props;
         const choice = choiceVal === 'original' ? 'translation' : 'original'
-        currentGroupVal.length === 0 ? window.location.pathname = '/profile' : null;
+        // //  ? window.location.pathname = '/profile' : null;
         return (
             <Card centered style={{ width: '400px' }}>
-                {currentIndex === lastIndex ? this.renderFinish() : this.renderStart(choice)}
+                {(currentIndex === lastIndex || currentGroupVal.length === 0) ? this.renderFinish() : this.renderStart(choice)}
             </Card>
         )
     }

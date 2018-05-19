@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
-import { Button, Card, Icon, Label, Form, Message } from 'semantic-ui-react'
+import { Button, Card, Icon, Label, Form, Message, Dropdown } from 'semantic-ui-react'
 import { AppConsumer } from '../StateContext';
 const names = [{ key: 'good', text: 'Good', color: 'green' }, { key: 'notBad', text: 'Not bad', color: 'blue' }, { key: 'bad', text: 'Bad', color: 'red' }]
 const options = [
-    { key: '1 h', text: '1 h', value: '1 h' },
-    { key: '1 day', text: '1 day', value: '1 day' },
-    { key: '1 week', text: '1 week', value: '1 week' },
-    { key: '1 month', text: '1 month', value: '1 month' },
-    { key: '3 month', text: '3 month', value: '3 month' },
+    { key: '3600', text: '1 h', value: '1 h' },
+    { key: '86400', text: '1 day', value: '1 day' },
+    { key: '604800', text: '1 week', value: '1 week' },
+    { key: '2628000', text: '1 month', value: '1 month' },
+    { key: '7884000', text: '3 months', value: '3 months' },
 ]
 
 class ProfileEdit extends Component {
@@ -15,10 +15,17 @@ class ProfileEdit extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            good: props.userVal.good,
-            notBad: props.userVal.notBad,
-            bad: props.userVal.bad,
+            good: null,
+            notBad: null,
+            bad: null,
             notification: false
+        }
+    }
+
+    componentWillReceiveProps({userVal}){
+        const {good, notBad, bad} = userVal;
+        if(userVal) {
+            this.setState({good, notBad, bad})
         }
     }
 
@@ -26,7 +33,7 @@ class ProfileEdit extends Component {
         return names.map(({ text, color, key }) => {
             return (
                 <div key={key} style={{ display: 'flex' }}>
-                    <Form.Select value={this.state[key]} name={key} onChange={this.handleChange} placeholder='Select interval' options={options} />
+                    <Dropdown value={this.state[key]} name={key} onChange={this.handleChange} options={options} />
                     <Label color={color}>{text}</Label>
                 </div>
             )
@@ -34,7 +41,8 @@ class ProfileEdit extends Component {
         })
     }
 
-    handleChange = (e, { name, value }) => {
+    handleChange = (e,  {name, value}) => {
+        //console.log(lol)
         this.setState({ [name]: value })
     }
 
@@ -43,7 +51,8 @@ class ProfileEdit extends Component {
         this.setState({ notification: true })
         this.timeOut = setTimeout(() => this.setState({ notification: false }), 1500)
         const { good, notBad, bad } = this.state;
-        this.props.handleUpdateRepetitionsFun({ good, notBad, bad });
+        //console.log(this.state);
+        this.props.handleUpdateRepetitionsFun({ good, notBad, bad});
     }
 
     render() {
