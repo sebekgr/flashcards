@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
 import Home from './Home';
 import Profile from './Profile/Profile'
 import LearningCard from './Learning/LearningCard';
@@ -8,22 +8,36 @@ import AddNew from './flashcards/AddNew';
 import CategoryList from './Profile/CategoryList';
 import SearchFlashcards from './flashcards/SearchFlashcards';
 import { Row, Col } from 'antd';
+import {AppConsumer} from './StateContext';
+
+const PrivateRoute = ({auth, component: Component, ...rest }) => (
+  <Route {...rest} render={(props) => (
+      auth ? <Component {...props} /> :
+      <Redirect to={{
+          pathname: '/',
+          from: props.location.pathname
+      }} />
+  )}
+  />
+);
 
 
 class App extends Component {
+
   render() {
+    const {userVal} = this.props;
     return (
       <Row>
       <Col>
        <Router>
          <Fragment>
                 <Route exact path="/" component={Home} />
-                <Route path="/profile" component={Profile} />
-                <Route path="/profile/edit" component={ProfileEdit} />
-                <Route path="/profile/add" component={AddNew} />
-                <Route path="/profile/categorylist" component={CategoryList} />
-                <Route path="/profile/search" component={SearchFlashcards} />
-                <Route exact path="/learning" component={LearningCard} />
+                <PrivateRoute auth={userVal} path="/profile" component={Profile} />
+                <PrivateRoute auth={userVal} path="/profile/edit" component={ProfileEdit} />
+                <PrivateRoute auth={userVal} path="/profile/add" component={AddNew} />
+                <PrivateRoute auth={userVal} path="/profile/categorylist" component={CategoryList} />
+                <PrivateRoute auth={userVal} path="/profile/search" component={SearchFlashcards} />
+                <PrivateRoute auth={userVal} exact path="/learning" component={LearningCard} />
           </Fragment>
         </Router>
       </Col>
@@ -33,4 +47,8 @@ class App extends Component {
   }
 }
 
-export default App;
+export default props => (
+  <AppConsumer>
+    {({userVal}) => <App {...props} userVal={userVal}/>}
+  </AppConsumer>
+)
