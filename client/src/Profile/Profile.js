@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import { Menu, Button } from 'antd';
 import { Link } from "react-router-dom";
 import Stats from './Stats';
-import gridConfig from '../gridConfig';
 
 const routeList = [
   { key: '', name: 'Statistics' },
@@ -20,7 +19,6 @@ class Profile extends Component {
   }
 
   handleToggle = () => {
-    const {toggleBtn} = this.state;
     this.setState(prevState=> ({toggleBtn: !prevState.toggleBtn}));
   }
 

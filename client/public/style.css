@@ -76,6 +76,11 @@ body,html{
 }
 .learning-card{
     text-align: center;
+    width: 100%;
+}
+.learning-wrapper{
+    display: flex;
+    justify-content: center;
 }
 
 .correct-answer{
@@ -100,4 +105,18 @@ body,html{
 }
 .total-nr-stats{
     font-size: 24px;
+}
+
+@media only screen and (max-width: 576px) {
+    .stats-group{
+        flex-flow: column nowrap;
+        justify-content: center;
+    }
+}
+@media only screen and (min-width: 768px) and (max-width: 1600px) {
+
+    
+    .learning-card{
+        width: 50%;
+    }
 }

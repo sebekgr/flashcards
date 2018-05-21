@@ -20,7 +20,6 @@ module.exports = app => {
 
     app.patch('/api/:user/repetitions', requireLogin, async (req, res) => {
         const {good, notBad, bad} = req.body;
-        console.log(req.body);
         try{
 
             await User.findByIdAndUpdate({_id: req.params.user}, {good, notBad, bad})
@@ -47,9 +46,6 @@ module.exports = app => {
     //update category name
     app.put('/api/:user/edit/category', requireLogin, async (req, res) => {
        const {currentName, newName} = req.body;
-       console.log(currentName);
-       console.log(newName);
-       console.log(req.params.user);
        try {
          await User.findOneAndUpdate({_id: req.params.user, category: currentName}, {$set: {"category.$": newName}}, {new: true});
         const flashcards = await Flashcards.where({category: currentName}).setOptions({ multi: true }).update({ $set: {category: newName}}).exec();

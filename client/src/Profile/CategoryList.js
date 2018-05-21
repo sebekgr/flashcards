@@ -1,4 +1,4 @@
-import React, {Component, Fragment} from 'react';
+import React, {Component} from 'react';
 import Category from './Category';
 import {AppConsumer} from '../StateContext';
 import { List, Row, Col } from 'antd';

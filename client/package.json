@@ -21,6 +21,7 @@
     "/api/*": {
       "target": "http://localhost:5000"
     }
+
   },
   "scripts": {
     "start": "react-app-rewired start",

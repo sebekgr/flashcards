@@ -9,9 +9,10 @@ module.exports = app => {
     //change here your callback route
     /// /auth/google/redirect
     app.get('/auth/google/redirect',
-        passport.authenticate('google'), (req, res) => {
-            res.redirect('http://localhost:3000/') //in production change address for '/'
-        });
+    passport.authenticate('google'), (req, res) => {
+        res.redirect('http://localhost:3000/') //in production change address for '/'
+    });
+
 
     
 
